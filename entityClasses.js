@@ -1,304 +1,301 @@
-  //Entity Class
-  //Base of all Entities, not directly used
-  var Entity = function (){
-    this.position = NULL;
-    this.asset = NULL;
-  }
-
-  //Will Be Defined for Each Unit
-  Entity.prototype.collision = function(){
-  }
-
-
-
-  //Unit Class
-  //Base of Different Units, not directly used
-  //Extension of Entity
-  function Unit(){
-    Entity.call();
-    this.health = NULL;
-  }
-
-  Unit.prototype = Object.create(Entity.prototype);
-  Unit.prototype.contructor = Unit;
-
-  //Will Be Defined for Each Unit
-  Unit.prototype.movement = function(){
-  }
-  Unit.protoype.attack = function(){
-  }
-
-
-
-  //Player Class
-  //Extension on Unit
-  function Player(health, asset, position, weapon, subWeapon){
-    Unit.call();
-    this.health = health;
-    this.asset = asset;
+//Entity Class
+//Base of all Entities, not directly used
+class Entity {
+  constructor(position, asset) {
     this.position = position;
+    this.asset = asset;
+    console.log("Entity Created");
+  }
+
+  //Will be defined for Each Entity
+  collision() {
+    console.log("An Entity hit something");
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////Units/////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+//Unit Class
+//Base of Different Units, not directly used
+//Extension of Entity
+class Unit extends Entity{
+    constructor(position, asset, health) {
+      super(position, asset);
+      this.health = health;
+      console.log("Unit Created");
+    }
+
+    //Will Be Defined for Each Unit
+    movement() {
+      console.log("A Unit Moved!");
+    }
+    attack() {
+      console.log("A Unit Attacked!");
+    }
+}
+
+//Player Class
+//Extension on Unit
+class Player extends Unit{
+  constructor(health, asset, position, weapon, subWeapon){
+    super(position, asset, health);
 
     this.weapon = weapon;
     this.subWeapon = subWeapon;
+
+    console.log("Player Created");
   }
 
-  Player.prototype = Object.create(Unit.prototype);
-  Player.protype.constructor = Player;
+  //Moves the Player
+  //Takes in an x and y which represent change in x and y coordinates
+  movement(x, y) {
+  console.log(this.position[0] + " " + this.position[1]);
+  this.position[0]=this.position[0]+x;
+  this.position[1]=this.position[1]+x;
+  console.log(this.position[0] + " " + this.position[1]);
+  console.log("You moved!");
+  }
 
-  Player.prototype.movement = function(){
+  attack() {
   //To Be Implemented
+  console.log("You attacked!");
   }
 
-  Player.protoype.attack = function(){
+  collision() {
   //To Be Implemented
+  console.log("You ran into something....");
   }
 
-  Player.protoype.collision = function(){
+}
+
+//Enemy Class
+//Extension of Unit
+class Enemy extends Unit{
+  constructor(health, asset, position){
+    super(position, asset, health);
+    console.log("Enemy Created");
+  }
+
+  movement() {
   //To Be Implemented
+  console.log("An enemy is trying to get you! :O");
   }
 
-
-
-
-  //Enemy Class
-  //Extension of Unit
-  function Enemy(health, asset, position){
-    Unit.call();
-    this.health = health;
-    this.asset = asset;
-    this.position = position;
-  }
-
-  Enemy.prototype = Object.create(Unit.prototype);
-  Enemy.protype.constructor = Enemy;
-
-  Enemy.prototype.movement = function(){
+  attack() {
   //To Be Implemented
+  console.log("An enemy shot at you :'(");
   }
 
-  Enemy.protoype.attack = function(){
+  collision() {
   //To Be Implemented
+  console.log("You really let an enemy walk into you...?");
   }
+}
 
-  Enemy.protoype.collision = function(){
-  //To Be Implemented
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////Items/////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+//Item Class
+//Base of All Items, not directly used
+//Extension of Entity
+class Item extends Entity{
+  constructor(position, asset){
+    super(position, asset);
+    console.log("Item Created");
   }
-
-
-
-  //Item Class
-  //Base of All Items, not directly used
-  //Extension of Entity
-  funciton Item(){
-    Entity.call();
-  }
-
-  Item.prototype = Object.create(Entity.prototype);
-  Item.prototype.contructor = Item;
 
   //Will Be Defined for Each Item
-  Item.prototype.modifier = function(){
+  modifier(){
+    console.log("This item is modifiying things");
   }
 
+}
 
-
-  //Bullet Class
-  //Base of All Bullets, not directly used
-  //Extension of Entity
-  funciton Bullet(){
-    Entity.call();
-    this.damage = NULL;
+//Recursion Rifle Pickup Class
+//Extension of Item
+class RecursionRiflePickup extends Item{
+  constructor(position, asset){
+    super(position, asset);
+    console.log("Recursion Rifle Pickup Created");
   }
 
-  Bullet.prototype = Object.create(Entity.prototype);
-  Bullet.prototype.contructor = Bullet;
+  modifier(){
+    //Sets Player Weapon to Recursion Rifle
+    console.log("This Recursion Rifle is modifiying things!")
+  }
+
+  collision(){
+    //If its with a player, call modifier
+    console.log("Hit a Recursion Rifle");
+  }
+}
+
+//Key Value Duals Pickup Class
+//Extension of Item
+class KeyValueDualsPickup extends Item{
+  constructor(position, asset){
+    super(position, asset);
+    console.log("Key Value Duals Pickup Created");
+  }
+
+  modifier(){
+    //Sets Player Weapon to Recursion Rifle
+    console.log("These Key Value Duals are modifiying things")
+  }
+
+  collision(){
+    //If its with a player, call modifier
+    console.log("Hit some Key Value Duals");
+  }
+}
+
+//Max Heap Blunderbuss Pickup Class
+//Extension of Item
+class MaxHeapBlunderbussPickup extends Item{
+  constructor(position, asset){
+    super(position, asset);
+    console.log("Max Heap Blunderbuss Pickup Created");
+  }
+
+  modifier(){
+    //Sets Player Weapon to Recursion Rifle
+    console.log("This Max Heap Blunderbuss is modifiying things")
+  }
+
+  collision(){
+    //If its with a player, call modifier
+    console.log("Hit a Max Heap Blunderbuss");
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Bullets////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+//Bullet Class
+//Base of All Bullets, not directly used
+//Extension of Entity
+class Bullet extends Entity{
+  constructor(position, asset, damage){
+    super(position, asset);
+    this.damage = damage;
+    console.log("Bullet Created");
+  }
 
   //Will Be Defined for Each Type of Bullet
-  Bullet.prototype.trajectory = function(){
+trajectory(){
+    console.log("This Bullet is going places!");
+  }
+}
+
+//Beam Class
+//Extension of Bullet
+class Beam extends Bullet{
+  constructor(position, asset, damage){
+    super(position, asset, damage);
+    console.log("Beam Created");
   }
 
-
-
-
-  //Beam Class
-  //Extension of Bullet
-  function Beam(damage, asset, position){
-    Bullet.call();
-    this.damage = damage;
-    this.asset = asset;
-    this.position = position;
+  trajectory(){
+    console.log("This Beam is going places!");
   }
 
-  Beam.prototype = Object.create(Bullet.prototype);
-  Beam.prototype.contructor = Beam;
-
-  Beam.prototype.trajectory = function(){
-  //To be Implemented
+  collision(){
+    console.log("This Beam hit something!");
   }
 
-  Beam.prototype.collision = function(){
-  //To be Implemented
+}
+
+//Bullets Class
+//Extension of Bullet
+class Bullets extends Bullet{
+  constructor(position, asset, damage){
+    super(position, asset, damage);
+    console.log("Bullets Created");
   }
 
-
-  //Bullets Class
-  //Extension of Bullet
-  function Bullets(damage, asset, position){
-    Bullet.call();
-    this.damage = damage;
-    this.asset = asset;
-    this.position = position;
+  trajectory(){
+    console.log("These Bullets are going places!");
   }
 
-  Bullets.prototype = Object.create(Bullet.prototype);
-  Bullets.prototype.contructor = Bullets;
-
-  Bullets.prototype.trajectory = function(){
-  //To be Implemented
+  collision(){
+    console.log("These Bullets hit something!");
   }
 
-  Bullets.prototype.collision = function(){
-  //To be Implemented
+}
+
+//Spread Class
+//Extension of Bullet
+class Spread extends Bullet{
+  constructor(position, asset, damage){
+    super(position, asset, damage);
+    console.log("Spread Created");
   }
 
-
-  //Spread Class
-  //Extension of Bullet
-  function Spread(damage, asset, position){
-    Bullet.call();
-    this.damage = damage;
-    this.asset = asset;
-    this.position = position;
+  trajectory(){
+    console.log("This Spread is going everywhere!");
   }
 
-  Spread.prototype = Object.create(Bullet.prototype);
-  Spread.prototype.contructor = Spread;
-
-  Spread.prototype.trajectory = function(){
-  //To be Implemented
+  collision(){
+    console.log("This Spread hit everything!");
   }
 
-  Spread.prototype.collision = function(){
-  //To be Implemented
-  }
+}
 
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////Weapons///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
-
-
-  //Weapon Class
-  //Base of All Weapons, not directly used
-  //Extension of Entity
-  function Weapon(){
-    Entity.call();
-    this.shoots = NULL;
-  }
-
-  Weapon.prototype = Object.create(Entity.prototype);
-  Weapon.prototype.contructor = Weapon;
-
-
-  //Recursion Rifle Class
-  //Extension of Weapon
-  function RecursionRifle(position, asset){
-    Weapon.call();
-    this.position = position;
-    this.asset = asset;
-  }
-
-  RecursionRifle.prototype = Object.create(Weapon.prototype);
-  RecursionRifle.prototype.contructor = RecursionRifle;
-
-  RecursionRifle.prototype.collision = function(){
-    //To Be Implemented
-  }
-
-
-  //Key Value Duals Class
-  //Extension of Weapon
-  function KeyValueDuals(position, asset){
-    Weapon.call();
-    this.position = position;
-    this.asset = asset;
-  }
-
-  KeyValueDuals.prototype = Object.create(Weapon.prototype);
-  KeyValueDuals.prototype.contructor = KeyValueDuals;
-
-  KeyValueDuals.prototype.collision = function(){
-    //To Be Implemented
-  }
-
-
-  //Max Heap Blunderbuss Class
-  //Extension of Weapon
-  function MaxHeapBlunderbuss(position, asset){
-    Weapon.call();
-    this.position = position;
-    this.asset = asset;
-  }
-
-  MaxHeapBlunderbuss.prototype = Object.create(Weapon.prototype);
-  MaxHeapBlunderbuss.prototype.contructor = MaxHeapBlunderbuss;
-
-  MaxHeapBlunderbuss.prototype.collision = function(){
-    //To Be Implemented
-  }
-
-
-
-
-
-
-
-
-
-  //Equiped Weapon Class
-  //Base of all Equiped Weapon, not directly used
-  var EquipedWeapon = function (){
-    this.ammo = NULL;
-    this.shoots = NULL;
-    this.position = NULL;
-    this.asset = NULL;
-  }
-
-  //Equiped Max Heap Blunderbuss Class
-  //Extension of Equiped Weapon
-  function EquipedMaxHeapBlunderbuss(ammo, position, asset){
-    EquipedWeapon.call();
+//Weapon Class
+//Base of All Weapons, not directly used
+//Extension of Entity
+class Weapon extends Entity{
+  constructor(position, asset, shoots, ammo){
+    super(position, asset);
+    this.shoots = shoots;
     this.ammo = ammo;
-    this.shoots = "Spread";
-    this.position = position;
-    this.asset = asset;
+    console.log("Weapon Created");
+  }
+}
+
+//Max Heap Blunderbuss Class
+//Extension of Weapon
+class MaxHeapBlunderbuss extends Weapon{
+  constructor(position, asset, ammo){
+    super(position, asset, "Spread", ammo);
+    console.log("Max Heap Blunderbuss Created");
   }
 
-  EquipedMaxHeapBlunderbuss.prototype = Object.create(EquipedWeapon.prototype);
-  EquipedMaxHeapBlunderbuss.prototype.contructor = EquipedMaxHeapBlunderbuss;
+  collision(){
+    console.log("You just hit your Max Heap Blunderbuss on something...");
+  }
+}
 
-
-  //Equiped Key Value Duals Class
-  //Extension of Equiped Weapon
-  function EquipedKeyValueDuals(ammo, position, asset){
-    EquipedWeapon.call();
-    this.ammo = ammo;
-    this.shoots = "Bullets";
-    this.position = position;
-    this.asset = asset;
+//Key Value Duals Class
+//Extension of Weapon
+class KeyValueDuals extends Weapon{
+  constructor(position, asset, ammo){
+    super(position, asset, "Bullets", ammo);
+    console.log("Key Value Duals Created");
   }
 
-  EquipedKeyValueDuals.prototype = Object.create(EquipedWeapon.prototype);
-  EquipedKeyValueDuals.prototype.contructor = EquipedKeyValueDuals;
+  collision(){
+    console.log("You just hit your Key Value Duals on something...");
+  }
+}
 
-
-
-  //Equiped Recursion Rifle Class
-  //Extension of Equiped Weapon
-  function EquipedRecursionRifle(ammo, position, asset){
-    EquipedWeapon.call();
-    this.ammo = ammo;
-    this.shoots = "Beam";
-    this.position = position;
-    this.asset = asset;
+//Recursion Rifle Class
+//Extension of Weapon
+class RecursionRifle extends Weapon{
+  constructor(position, asset, ammo){
+    super(position, asset, "Beam", ammo);
+    console.log("Recursion Rifle Created");
   }
 
-  EquipedRecursionRifle.prototype = Object.create(EquipedWeapon.prototype);
-  EquipedRecursionRifle.prototype.contructor = RecursionRifle;
+  collision(){
+    console.log("You just hit your Recursion Rifle on something...");
+  }
+}
