@@ -1,9 +1,10 @@
 //Entity Class
 //Base of all Entities, not directly used
-class Entity {
-  constructor(position, asset) {
-    this.position = position;
-    this.asset = asset;
+class Entity extends Collidable {
+  constructor(x, y, texture) {
+    this.x = x;
+    this.y = y;
+    this.sprite = new PIXI.Sprite(texture);
     console.log("Entity Created");
   }
 
@@ -11,6 +12,12 @@ class Entity {
   collision() {
     console.log("An Entity hit something");
   }
+
+  init(){
+    
+  }
+
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -21,8 +28,8 @@ class Entity {
 //Base of Different Units, not directly used
 //Extension of Entity
 class Unit extends Entity{
-    constructor(position, asset, health) {
-      super(position, asset);
+    constructor(x, y, texture, health) {
+      super(x, y, texture);
       this.health = health;
       console.log("Unit Created");
     }
@@ -39,8 +46,8 @@ class Unit extends Entity{
 //Player Class
 //Extension on Unit
 class Player extends Unit{
-  constructor(health, asset, position, weapon, subWeapon){
-    super(position, asset, health);
+  constructor(health, texture, x, y, weapon, subWeapon){
+    super(x, y, texture, health);
 
     this.weapon = weapon;
     this.subWeapon = subWeapon;
@@ -51,10 +58,10 @@ class Player extends Unit{
   //Moves the Player
   //Takes in an x and y which represent change in x and y coordinates
   movement(x, y) {
-  console.log(this.position[0] + " " + this.position[1]);
-  this.position[0]=this.position[0]+x;
-  this.position[1]=this.position[1]+x;
-  console.log(this.position[0] + " " + this.position[1]);
+  console.log(this.x + " " + this.y);
+  this.x = this.x + x;
+  this.y = this.y + x;
+  console.log(this.x + " " + this.y);
   console.log("You moved!");
   }
 
@@ -73,8 +80,8 @@ class Player extends Unit{
 //Enemy Class
 //Extension of Unit
 class Enemy extends Unit{
-  constructor(health, asset, position){
-    super(position, asset, health);
+  constructor(health, texture, x, y){
+    super(x, y, texture, health);
     console.log("Enemy Created");
   }
 
@@ -102,8 +109,8 @@ class Enemy extends Unit{
 //Base of All Items, not directly used
 //Extension of Entity
 class Item extends Entity{
-  constructor(position, asset){
-    super(position, asset);
+  constructor(x, y, texture){
+    super(x, y, texture);
     console.log("Item Created");
   }
 
@@ -117,8 +124,8 @@ class Item extends Entity{
 //Recursion Rifle Pickup Class
 //Extension of Item
 class RecursionRiflePickup extends Item{
-  constructor(position, asset){
-    super(position, asset);
+  constructor(x, y, texture){
+    super(x, y, texture);
     console.log("Recursion Rifle Pickup Created");
   }
 
@@ -136,8 +143,8 @@ class RecursionRiflePickup extends Item{
 //Key Value Duals Pickup Class
 //Extension of Item
 class KeyValueDualsPickup extends Item{
-  constructor(position, asset){
-    super(position, asset);
+  constructor(x, y, texture){
+    super(x, y, texture);
     console.log("Key Value Duals Pickup Created");
   }
 
@@ -155,8 +162,8 @@ class KeyValueDualsPickup extends Item{
 //Max Heap Blunderbuss Pickup Class
 //Extension of Item
 class MaxHeapBlunderbussPickup extends Item{
-  constructor(position, asset){
-    super(position, asset);
+  constructor(x, y, texture){
+    super(x, y, texture);
     console.log("Max Heap Blunderbuss Pickup Created");
   }
 
@@ -179,8 +186,8 @@ class MaxHeapBlunderbussPickup extends Item{
 //Base of All Bullets, not directly used
 //Extension of Entity
 class Bullet extends Entity{
-  constructor(position, asset, damage){
-    super(position, asset);
+  constructor(x, y, texture, damage){
+    super(x, y, texture);
     this.damage = damage;
     console.log("Bullet Created");
   }
@@ -194,8 +201,8 @@ trajectory(){
 //Beam Class
 //Extension of Bullet
 class Beam extends Bullet{
-  constructor(position, asset, damage){
-    super(position, asset, damage);
+  constructor(x, y, texture, damage){
+    super(x, y, texture, damage);
     console.log("Beam Created");
   }
 
@@ -212,8 +219,8 @@ class Beam extends Bullet{
 //Bullets Class
 //Extension of Bullet
 class Bullets extends Bullet{
-  constructor(position, asset, damage){
-    super(position, asset, damage);
+  constructor(x, y, texture, damage){
+    super(x, y, texture, damage);
     console.log("Bullets Created");
   }
 
@@ -230,8 +237,8 @@ class Bullets extends Bullet{
 //Spread Class
 //Extension of Bullet
 class Spread extends Bullet{
-  constructor(position, asset, damage){
-    super(position, asset, damage);
+  constructor(x, y, texture, damage){
+    super(x, y, texture, damage);
     console.log("Spread Created");
   }
 
@@ -253,8 +260,8 @@ class Spread extends Bullet{
 //Base of All Weapons, not directly used
 //Extension of Entity
 class Weapon extends Entity{
-  constructor(position, asset, shoots, ammo){
-    super(position, asset);
+  constructor(x, y, texture, shoots, ammo){
+    super(x, y, texture);
     this.shoots = shoots;
     this.ammo = ammo;
     console.log("Weapon Created");
@@ -264,8 +271,8 @@ class Weapon extends Entity{
 //Max Heap Blunderbuss Class
 //Extension of Weapon
 class MaxHeapBlunderbuss extends Weapon{
-  constructor(position, asset, ammo){
-    super(position, asset, "Spread", ammo);
+  constructor(x, y, texture, ammo){
+    super(x, y, texture, "Spread", ammo);
     console.log("Max Heap Blunderbuss Created");
   }
 
@@ -277,8 +284,8 @@ class MaxHeapBlunderbuss extends Weapon{
 //Key Value Duals Class
 //Extension of Weapon
 class KeyValueDuals extends Weapon{
-  constructor(position, asset, ammo){
-    super(position, asset, "Bullets", ammo);
+  constructor(x, y, texture, ammo){
+    super(x, y, texture, "Bullets", ammo);
     console.log("Key Value Duals Created");
   }
 
@@ -290,8 +297,8 @@ class KeyValueDuals extends Weapon{
 //Recursion Rifle Class
 //Extension of Weapon
 class RecursionRifle extends Weapon{
-  constructor(position, asset, ammo){
-    super(position, asset, "Beam", ammo);
+  constructor(x, y, texture, ammo){
+    super(x, y, texture, "Beam", ammo);
     console.log("Recursion Rifle Created");
   }
 
