@@ -84,6 +84,8 @@ class World {
     for (commit in parsedMeta.commits) {
       nodes[commit].generateNode(parsedMeta.commits[commit]);
     }
+
+    this.currentNode = init;
   }
 
   update(inputBundle) {
@@ -198,10 +200,10 @@ class EnvNode {
   }
 
   /*
-    Parses metadata into a node.
+    Parses data for a commit into a node.
   */
   generateNode(commitData) {
-    console.log('Node metadata ' + metadata);
+
   }
 
   /*
@@ -236,32 +238,48 @@ class EnvNode {
   updateEntities() {
     console.log('Entities ' + this.entities);
   }
-}
-
-class Tile extends Collidable {
-  constructor(x, y, texture) {
-    this.x = x;
-    this.y = y;
-    this.sprite = Pixi.sprite(texture);
-  }
 
   init() {
-    gameStage.addChild(this.sprite);
+    for (tile of tileSet) {
+      tile.init();
+    }
+
+
   }
 
   render() {
-    this.sprite.x = this.x;
-    this.sprite.y = this.y;
+
   }
 
   detach() {
-    gameStage.removeChild(this.sprite);
+
+  }
+}
+
+class Tile extends Collidable {
+  constructor(x, y, width, height, frames) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.animation = PIXI.extras.MovieClip(frames);
+    this.animation.animationSpeed = 1.5;
+  }
+
+  init() {
+    this.animation.play();
+    gameScene.addChild(this.animation);
+  }
+
+  detach() {
+    this.animation.stop();
+    gameScene.removeChild(this.animation);
   }
 }
 
 class Door extends Tile {
-  constructor(x, y, texture, nodeHash) {
-    super(x, y, texture, tile);
+  constructor(x, y, width, height, texture, nodeHash) {
+    super(x, y, width, height, texture, tile);
     this.nodeHash = nodeHash;
   }
 }
@@ -289,7 +307,7 @@ class Wall extends Tile {
 class Warp extends Tile {
   collision(entity) {
     if (entity instanceof Player) {
-      gameState = states.WIN;
+      gameState = gameStates.win;
     }
   }
 }
@@ -322,6 +340,4 @@ class Queue {
     return this.elements.length == 0;
   }
 }
-
-let world = new World();
-console.log(world);
+console.log('loaded');
