@@ -11,15 +11,17 @@ class World {
 
   generateWorld(metadata) {
     // Clear on new generation.
-    this.envGraph.clear();
+    if (this.envGraph !== null) {
+      this.envGraph.clear();
+    }
     let parsedMeta = JSON.parse(metadata);
-
+    console.log(parsedMeta.commits);
     // Iterate over commit strings to build nodes.
-    for (commit in parsedMeta.commits) {
-      let node = nodes[commit];
+    for (var commit in parsedMeta.commits) {
+      let node = this.nodes[commit];
 
       // If node wasn't previously defined, by being a parent of a previous node, then create a new one.
-      if (nodes[commit] === null || nodes[commit] === undefined) {
+      if (this.nodes[commit] === null || this.nodes[commit] === undefined) {
         node = new EnvNode();
         node.hash = commit;
       }
@@ -29,9 +31,9 @@ class World {
       if (parsedMeta.commits[commit].parents.length === 1) {
         let parent = parsedMeta.commits[commit].parents[0];
         // If the parent doesn't already exist create it preemptively.
-        if (nodes[parent] === null || nodes[parent] === undefined) {
-          nodes[parent] = new EnvNode();
-          nodes[parent].hash = parent;
+        if (this.nodes[parent] === null || this.nodes[parent] === undefined) {
+          this.nodes[parent] = new EnvNode();
+          this.nodes[parent].hash = parent;
         }
 
         // Ensure bidirection and specify parent.
@@ -42,37 +44,39 @@ class World {
       // This is a merge point and we want it to be directional.
       } else if (parsedMeta.commits[commit].parents.length > 1) {
         // This has reference to parents but parent doesnt have a reference to this.
-        for (parent of parsedMeta.commits[commit].parents) {
+        for (var parent of parsedMeta.commits[commit].parents) {
           node.neighbors.push(parent);
           node.parents.push(parent);
         }
       }
 
       // Add the new node to nodes.
-      nodes[commit] = node;
+      this.nodes[commit] = node;
     }
 
     // Create the graph and generate it.
-    this.envGraph = new EnvironmentGraph(nodes);
+    this.envGraph = new EnvironmentGraph(this.nodes);
     this.envGraph.generateGraph();
 
     // Find the initial node. This should be the one with no parents :(
     let init = null;
-    for (node in nodes) {
-      if (node.parents.length === 0) {
-        init = node;
+    for (var node in this.nodes) {
+      if (this.nodes[node].parents.length === 0) {
+        init = this.nodes[node];
       }
     }
 
     // Run BFS to get depth from init to any other node. This will give us depth, which we'll
     // use later to scale difficulty.
-    bfs(init);
+    this.envGraph.bfs(init);
 
     // Now that we've used BFS we want to ensure all nodes are bidirectional.
-    for (node in nodes) {
-      for (neighbor of node.neighbors) {
-        if (!nodes[neighbor].neighbors.contains[node.hash]) {
-          nodes[neighbor].neighbors.push(node.hash);
+    for (var node in this.nodes) {
+      for (var neighbor in this.nodes[node].neighbors) {
+        console.log(this.nodes[node].neighbors[neighbor]);
+        console.log(this.nodes[node].hash);
+        if (!this.nodes[neighbor].neighbors.contains[node]) {
+          this.nodes[neighbor].neighbors.push(node.hash);
         }
       }
     }
@@ -81,8 +85,8 @@ class World {
     this.envGraph.generateGraph();
 
     // After building the data structure generate the node data.
-    for (commit in parsedMeta.commits) {
-      nodes[commit].generateNode(parsedMeta.commits[commit]);
+    for (var commit in parsedMeta.commits) {
+      this.nodes[commit].generateNode(parsedMeta.commits[commit]);
     }
 
     this.currentNode = init;
@@ -110,9 +114,9 @@ class EnvironmentGraph {
   }
 
   getNode(nodeHash) {
-    for (node of this.nodes) {
-      if (node.hash === nodeHash) {
-        return node;
+    for (var node in this.nodes) {
+      if (this.nodes[node].hash === nodeHash) {
+        return this.nodes[node];
       }
     }
     return null;
@@ -121,9 +125,9 @@ class EnvironmentGraph {
   /*
     Adds all nodes to the graph and runs a bfs to set depth aka difficulty for each node from the root.
   */
-  createGraph() {
-    for (node of this.nodes) {
-      this.addNode(node);
+  generateGraph() {
+    for (var node in this.nodes) {
+      this.addNode(this.nodes[node]);
     }
   }
 
@@ -133,11 +137,11 @@ class EnvironmentGraph {
   bfs(startNode) {
     var q = new Queue();
     // First pair has not inner edge.
-    q.push([null, node.hash]);
+    q.push([null, startNode.hash]);
     while (!q.isEmpty()) {
       let edge = q.pop();
-      let u = getNode(edge[0]);
-      let v = getNode(edge[1]);
+      let u = this.getNode(edge[0]);
+      let v = this.getNode(edge[1]);
       if (!v.visited) {
         v.visited = true;
         v.parentHash = edge[0];
@@ -146,8 +150,8 @@ class EnvironmentGraph {
         } else {
           v.depth = u.depth + 1;
         }
-        for (neighborHash of v.neighbors) {
-          q.push([v.hash, neighborHash]);
+        for (var neighborHash in v.neighbors) {
+          q.push([v.hash, v.neighbors[neighborHash]]);
         }
       }
     }
@@ -159,8 +163,8 @@ class EnvironmentGraph {
   addNode(envNode) {
     let nodeHash = envNode.hash;
     this.graph[nodeHash] = [];
-    for (adjacentHash of envNode.neighbors) {
-      this.graph[nodeHash].push(adjacentHash);
+    for (var adjacentHash in envNode.neighbors) {
+      this.graph[nodeHash].push(envNode.neighbors[adjacentHash]);
     }
   }
 
@@ -188,6 +192,9 @@ class EnvNode {
 
   constructor() {
       this.hash = '';
+      // Default room dimensions
+      this.width = 10;
+      this.height = 8;
       this.tileSet = [];
       this.verticalTileCount = 0;
       this.horizontalTileCount = 0;
@@ -203,7 +210,31 @@ class EnvNode {
     Parses data for a commit into a node.
   */
   generateNode(commitData) {
+    // Resize if needed.
+    if (this.parents.length > this.height - 2) {
+      // Set height to the number of nodes needed plus the top and bottom walls.
+      this.height = this.parents.length + 2;
+    }
 
+    // If there are more outgoing then top and bottom walls.
+    if (this.neighbors.length - this.parents.length > 2*(this.width - 2)) {
+      this.width = this.neighbors.length - this.parents.length + 2;
+    }
+
+    this.tileSet = new Array(this.width);
+    for (var i = 0; i < this.tileSet.length; i++) {
+      this.tileSet[i] = new Array(this.height);
+    }
+
+    this.tileSet[0][0] = new Wall(0, 0, 1, -1, 100, 100, tileFrames.corner);
+    this.tileSet[0][this.height - 1] = new Wall(0, 100*(this.height - 3), 1, 1, 100, 100, tileFrames.corner);
+    this.tileSet[this.width - 1][0] = new Wall(100*(this.width - 3), 0, -1, -1, 100, 100, tileFrames.corner);
+    this.tileSet[this.width - 1][this.height - 1] = new Wall(100*(this.width - 3), 100*(this.height - 3), -1, 1, 100, 100, tileFrames.corner);
+    for (var i = 1; i < this.width - 3; i++) {
+      for (var j = 1; j < this.height - 3; j++) {
+        this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
+      }
+    }
   }
 
   /*
@@ -212,9 +243,9 @@ class EnvNode {
   */
   update(inputBundle) {
     console.log('Updating current node');
-    updateTiles();
-    updatePlayer(inputBundle);
-    updateEntities();
+    // this.updateTiles();
+    // this.updatePlayer(inputBundle);
+    // this.updateEntities();
     console.log();
   }
 
@@ -240,11 +271,13 @@ class EnvNode {
   }
 
   init() {
-    for (tile of tileSet) {
-      tile.init();
+    for (var col in this.tileSet) {
+      for (var row in this.tileSet[col]) {
+        if (this.tileSet[col][row] !== undefined) {
+          this.tileSet[col][row].init();
+        }
+      }
     }
-
-
   }
 
   render() {
@@ -256,14 +289,26 @@ class EnvNode {
   }
 }
 
-class Tile extends Collidable {
-  constructor(x, y, width, height, frames) {
+class Tile {
+  constructor(x, y, xScale, yScale, width, height, frames) {
     this.x = x;
     this.y = y;
+    this.xScale = xScale;
+    this.yScale = yScale;
     this.width = width;
     this.height = height;
-    this.animation = PIXI.extras.MovieClip(frames);
-    this.animation.animationSpeed = 1.5;
+    this.animation = new Movie(frames);
+    if (xScale === -1) {
+      this.x += width;
+    }
+    this.animation.scale.x = this.xScale;
+    if (yScale === -1) {
+      this.y += height;
+    }
+    this.animation.scale.y = this.yScale;
+    this.animation.x = this.x;
+    this.animation.y = this.y;
+    this.animation.animationSpeed = .15;
   }
 
   init() {
@@ -278,8 +323,8 @@ class Tile extends Collidable {
 }
 
 class Door extends Tile {
-  constructor(x, y, width, height, texture, nodeHash) {
-    super(x, y, width, height, texture, tile);
+  constructor(x, y, xScale, yScale, width, height, frames, nodeHash) {
+    super(x, y, xScale, yScale, width, height, frames, tile);
     this.nodeHash = nodeHash;
   }
 }
