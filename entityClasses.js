@@ -1,10 +1,19 @@
 //Entity Class
 //Base of all Entities, not directly used
-class Entity extends Collidable {
-  constructor(x, y, texture) {
+class Entity /*extends Collidable*/ {
+  constructor(x, y, xScale, yScale, frames) {
     this.x = x;
     this.y = y;
-    this.sprite = new PIXI.Sprite(texture);
+    this.xScale = xScale;
+    this.yScale = yScale;
+    this.animation = new Movie(frames);
+
+    this.animation.scale.x = this.xScale;
+    this.animation.scale.y = this.yScale;
+    this.animation.x = this.x;
+    this.animation.y = this.y;
+    this.animation.animationSpeed = .15;
+
     console.log("Entity Created");
   }
 
@@ -13,8 +22,14 @@ class Entity extends Collidable {
     console.log("An Entity hit something");
   }
 
-  init(){
-    
+  init() {
+    this.animation.play();
+    gameScene.addChild(this.animation);
+  }
+
+  detach() {
+    this.animation.stop();
+    gameScene.removeChild(this.animation);
   }
 
 
@@ -61,6 +76,8 @@ class Player extends Unit{
   console.log(this.x + " " + this.y);
   this.x = this.x + x;
   this.y = this.y + x;
+  this.animation.x = this.x;
+  this.animation.y = this.y;
   console.log(this.x + " " + this.y);
   console.log("You moved!");
   }
