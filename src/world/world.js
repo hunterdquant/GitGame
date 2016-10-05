@@ -73,10 +73,12 @@ class World {
     // Now that we've used BFS we want to ensure all nodes are bidirectional.
     for (var node in this.nodes) {
       for (var neighbor in this.nodes[node].neighbors) {
-        console.log(this.nodes[node].neighbors[neighbor]);
-        console.log(this.nodes[node].hash);
-        if (!this.nodes[neighbor].neighbors.contains[node]) {
-          this.nodes[neighbor].neighbors.push(node.hash);
+        // Get the hash of the neighbor.
+        let neighborHash = this.nodes[node].neighbors[neighbor];
+        console.log(this.nodes);
+        // If the neighbor doesn't contain this node, then add this node as a neighbor.
+        if (this.nodes[neighborHash].neighbors.indexOf(this.nodes[node].hash) < 0) {
+          this.nodes[neighborHash].neighbors.push(this.nodes[node].hash);
         }
       }
     }
