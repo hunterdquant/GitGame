@@ -1,0 +1,19 @@
+Here are some of my initial assets:
+
+-the six "tilesAnim" images are different frames of animation for the world tiles. They should be
+animated in order from 1-6, and then backwards from 5 all the way to 1. Thereafter, they should smoothly loop.
+
+-there is an unanimated placeholder to represent the player charatcer. I'll make it better later.
+
+-The current tilesAnim set of images has floor, wall, wallcorner, doorway, and end-of-level tiles. The red doorway
+is not yet animated. Wall and door tiles will HAVE to be rotated, and floor tiles should probably be roated as they're
+placed for more visual variation. (The six unique floor tiles would become 24 unique floor tiles.)
+
+-I'm aware that the end-of-level tile's animation is still a little poor. I'll work to smooth it up later.
+
+-The doorway portal will probably also be improved later, to make it look a little smoother and less ms-paint esque.
+
+-If you want these on individual sprite sheets instead, tell me and I can do it no problem.
+
+
+XOXOXOXOXO Yoel
