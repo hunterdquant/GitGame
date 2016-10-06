@@ -44,6 +44,10 @@ tileFrames = {
   warp: []
 };
 
+unitFrames = {
+  player: []
+}
+
 // Manipulates loaded resources
 function setup() {
   // Sprite sheet loading

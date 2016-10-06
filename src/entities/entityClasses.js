@@ -1,15 +1,10 @@
 //Entity Class
 //Base of all Entities, not directly used
 class Entity /*extends Collidable*/ {
-  constructor(x, y, xScale, yScale, frames) {
+  constructor(x, y, frames) {
     this.x = x;
     this.y = y;
-    this.xScale = xScale;
-    this.yScale = yScale;
     this.animation = new Movie(frames);
-
-    this.animation.scale.x = this.xScale;
-    this.animation.scale.y = this.yScale;
     this.animation.x = this.x;
     this.animation.y = this.y;
     this.animation.animationSpeed = .15;
@@ -31,8 +26,6 @@ class Entity /*extends Collidable*/ {
     this.animation.stop();
     gameScene.removeChild(this.animation);
   }
-
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,8 +36,8 @@ class Entity /*extends Collidable*/ {
 //Base of Different Units, not directly used
 //Extension of Entity
 class Unit extends Entity{
-    constructor(x, y, texture, health) {
-      super(x, y, texture);
+    constructor(x, y, frames, health) {
+      super(x, y, frames);
       this.health = health;
       console.log("Unit Created");
     }
@@ -61,8 +54,8 @@ class Unit extends Entity{
 //Player Class
 //Extension on Unit
 class Player extends Unit{
-  constructor(health, texture, x, y, weapon, subWeapon){
-    super(x, y, texture, health);
+  constructor(x, y, frames, health, weapon, subWeapon){
+    super(x, y, frames, health);
 
     this.weapon = weapon;
     this.subWeapon = subWeapon;

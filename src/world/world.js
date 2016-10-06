@@ -7,6 +7,7 @@ class World {
     this.envGraph = null;
     this.nodes = {};
     this.currentNode = null;
+    this.player = null;
   }
 
   generateWorld(metadata) {
@@ -94,8 +95,16 @@ class World {
   }
 
   update(inputBundle) {
-    if (currentNode !== null) {
-      currentNode.update(inputBundle);
+    console.log(inputBundle);
+    if (this.currentNode !== null) {
+      this.currentNode.update(inputBundle);
+    }
+  }
+
+  init() {
+    if (this.currentNode !== null) {
+      //this.player = new Player(100, (this.currentNode.height*100)/2, unitFrames.player, 100);
+      this.currentNode.init();
     }
   }
 
