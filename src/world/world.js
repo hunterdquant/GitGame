@@ -95,7 +95,6 @@ class World {
   }
 
   update(inputBundle) {
-    console.log(inputBundle);
     if (this.currentNode !== null) {
       this.currentNode.update(inputBundle);
     }
@@ -103,8 +102,10 @@ class World {
 
   init() {
     if (this.currentNode !== null) {
-      //this.player = new Player(100, (this.currentNode.height*100)/2, unitFrames.player, 100);
+      this.player = new Player(100, (this.currentNode.height/3)*100, unitFrames.player, 100);
+      this.currentNode.player = this.player;
       this.currentNode.init();
+      this.currentNode.player.init();
     }
   }
 
@@ -310,7 +311,7 @@ class EnvNode {
   */
   update(inputBundle) {
     // this.updateTiles();
-    // this.updatePlayer(inputBundle);
+    this.updatePlayer(inputBundle);
     // this.updateEntities();
   }
 
@@ -325,7 +326,25 @@ class EnvNode {
     This function will update player state and render the player entity.
   */
   updatePlayer(inputBundle) {
-    console.log('Player ' + this.player);
+    let x = 0;
+    let y = 0;
+    // W
+    if (inputBundle[87]) {
+      y -= this.player.moveStep;
+    }
+    // S
+    if (inputBundle[83]) {
+      y += this.player.moveStep;
+    }
+    // A
+    if (inputBundle[65]) {
+      x -= this.player.moveStep;
+    }
+    // D
+    if (inputBundle[68]) {
+      x += this.player.moveStep;
+    }
+    this.player.movement(x, y);
   }
 
   /*

@@ -7,7 +7,7 @@ class Entity /*extends Collidable*/ {
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
-    this.animation.animationSpeed = .15;
+    this.animation.animationSpeed = .25;
 
     console.log("Entity Created");
   }
@@ -59,20 +59,17 @@ class Player extends Unit{
 
     this.weapon = weapon;
     this.subWeapon = subWeapon;
-
+    this.moveStep = 4;
     console.log("Player Created");
   }
 
   //Moves the Player
   //Takes in an x and y which represent change in x and y coordinates
   movement(x, y) {
-  console.log(this.x + " " + this.y);
-  this.x = this.x + x;
-  this.y = this.y + x;
-  this.animation.x = this.x;
-  this.animation.y = this.y;
-  console.log(this.x + " " + this.y);
-  console.log("You moved!");
+    this.x = this.x + x;
+    this.y = this.y + y;
+    this.animation.x = this.x;
+    this.animation.y = this.y;
   }
 
   attack() {
