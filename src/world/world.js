@@ -2,11 +2,12 @@
   The world class is used to interact with the data structure representation of the game.
 */
 class World {
-  
+
   constructor() {
     this.envGraph = null;
     this.nodes = {};
     this.currentNode = null;
+    this.player = null;
   }
 
   generateWorld(metadata) {
@@ -75,7 +76,6 @@ class World {
       for (var neighbor in this.nodes[node].neighbors) {
         // Get the hash of the neighbor.
         let neighborHash = this.nodes[node].neighbors[neighbor];
-        console.log(this.nodes);
         // If the neighbor doesn't contain this node, then add this node as a neighbor.
         if (this.nodes[neighborHash].neighbors.indexOf(this.nodes[node].hash) < 0) {
           this.nodes[neighborHash].neighbors.push(this.nodes[node].hash);
@@ -91,13 +91,21 @@ class World {
       this.nodes[commit].generateNode(parsedMeta.commits[commit]);
     }
 
-    this.currentNode = this.nodes["644a40687d8741014277ce021cfd415a0ee0f681"]; //Here we is!
-//    this.currentNode = init;
+    this.currentNode = init;
   }
 
   update(inputBundle) {
-    if (currentNode !== null) {
-      currentNode.update(inputBundle);
+    if (this.currentNode !== null) {
+      this.currentNode.update(inputBundle);
+    }
+  }
+
+  init() {
+    if (this.currentNode !== null) {
+      this.player = new Player(100, (this.currentNode.height/3)*100, unitFrames.player, 100);
+      this.currentNode.player = this.player;
+      this.currentNode.init();
+      this.currentNode.player.init();
     }
   }
 
@@ -230,7 +238,7 @@ class EnvNode {
     }
 
 
-	//The four corners are produced:
+    //The four corners are produced:
     this.tileSet[0][0] = new Wall(0, 0, 1, -1, 100, 100, tileFrames.corner);
     this.tileSet[0][this.height - 1] = new Wall(0, 100*(this.height - 3), 1, 1, 100, 100, tileFrames.corner);
     this.tileSet[this.width - 1][0] = new Wall(100*(this.width - 3), 0, -1, -1, 100, 100, tileFrames.corner);
@@ -243,61 +251,58 @@ class EnvNode {
       }
     }
 
-	//The Left Handed (Parent) doors are produced
-	var Pindex = Math.round((this.height-2)/2); //A cute little indexing variable <3
-	var direction = true; //True = up, false = down
-	var jump = 1;
-	
-	for(var parent of this.parents){
-		this.tileSet[0][Pindex] = new Door(0, 100*Pindex, 1, 1, 100, 100, tileFrames.door1, parent);
-		if(direction){
-			Pindex = Pindex + jump;
-			direction = false;
-			jump++;
-		}else{
-			Pindex = Pindex - jump;
-			direction = true;
-			jump++;
-		}
-	}
+  	//The Left Handed (Parent) doors are produced
+  	var Pindex = Math.round((this.height-2)/2); //A cute little indexing variable <3
+  	var direction = true; //True = up, false = down
+  	var jump = 1;
 
-	//And the remaining doors, the children, are produced.
-	Pindex = Math.round((this.height-2)/2);
-	direction = true;
-	jump = 1;
-	 
-        for(var neighbor of this.neighbors){
-	   if(this.parents.includes(neighbor) == false){ //Only do them doors that are not part of parents already :)))))
-                this.tileSet[this.width-1][Pindex] = new Door(100*(this.width-3), 100*Pindex, -1, 1, 100, 100, tileFrames.door1, neighbor);
-                if(direction){
-                        Pindex = Pindex + jump;
-                        direction = false;
-                        jump++;
-                }else{
-                        Pindex = Pindex - jump;
-                        direction = true;
-                        jump++;
-                }
-	    }
+  	for(var parent of this.parents){
+  		this.tileSet[0][Pindex] = new Door(0, 100*Pindex, 1, 1, 100, 100, tileFrames.door1, parent);
+  		if(direction){
+  			Pindex = Pindex + jump;
+  			direction = false;
+  			jump++;
+  		}else{
+  			Pindex = Pindex - jump;
+  			direction = true;
+  			jump++;
+  		}
+  	}
+
+  	//And the remaining doors, the children, are produced.
+  	Pindex = Math.round((this.height-2)/2);
+  	direction = true;
+  	jump = 1;
+
+    for(var neighbor of this.neighbors){
+      if(this.parents.includes(neighbor) == false){ //Only do them doors that are not part of parents already :)))))
+        this.tileSet[this.width-1][Pindex] = new Door(100*(this.width-3), 100*Pindex, -1, 1, 100, 100, tileFrames.door1, neighbor);
+        if(direction){
+          Pindex = Pindex + jump;
+          direction = false;
+          jump++;
+        } else {
+          Pindex = Pindex - jump;
+          direction = true;
+          jump++;
         }
+	    }
+    }
 
-	
-	
-	//The remaining walls are produced
-	for(var i = 1; i<this.height - 3; i++){
-	
-		if(this.tileSet[0][i] == null){
-			this.tileSet[0][i] = new Wall(0, (100*i), 1, 1, 100, 100, tileFrames.wall1); //Left Walls
-		}
-		if(this.tileSet[this.width-1][i] == null){
-			this.tileSet[this.width - 1][i] = new Wall(100*(this.width-3), (100*i), -1, 1, 100, 100, tileFrames.wall1); //Right walls
-		}
-	}
-	for(var i = 1; i<this.width - 3; i++){
-			this.tileSet[i][0] = new Wall( (100*i), 0, 1, 1, 100, 100, tileFrames.wall2); //Top Walls
-			this.tileSet[i][this.height-1] = new Wall((100*i), 100*(this.height-3), 1, -1, 100, 100, tileFrames.wall2); //Bottom Walls
-	}
+  	//The remaining walls are produced
+  	for(var i = 1; i<this.height - 3; i++){
 
+  		if(this.tileSet[0][i] == null){
+  			this.tileSet[0][i] = new Wall(0, (100*i), 1, 1, 100, 100, tileFrames.wall1); //Left Walls
+  		}
+  		if(this.tileSet[this.width-1][i] == null){
+  			this.tileSet[this.width - 1][i] = new Wall(100*(this.width-3), (100*i), -1, 1, 100, 100, tileFrames.wall1); //Right walls
+  		}
+  	}
+  	for(var i = 1; i<this.width - 3; i++){
+  			this.tileSet[i][0] = new Wall( (100*i), 0, 1, 1, 100, 100, tileFrames.wall2); //Top Walls
+  			this.tileSet[i][this.height-1] = new Wall((100*i), 100*(this.height-3), 1, -1, 100, 100, tileFrames.wall2); //Bottom Walls
+  	}
   }
 
   /*
@@ -305,11 +310,9 @@ class EnvNode {
     inputBundle - an object containing information about user input.
   */
   update(inputBundle) {
-    console.log('Updating current node');
     // this.updateTiles();
-    // this.updatePlayer(inputBundle);
+    this.updatePlayer(inputBundle);
     // this.updateEntities();
-    console.log();
   }
 
   /*
@@ -323,7 +326,25 @@ class EnvNode {
     This function will update player state and render the player entity.
   */
   updatePlayer(inputBundle) {
-    console.log('Player ' + this.player);
+    let x = 0;
+    let y = 0;
+    // W
+    if (inputBundle[87]) {
+      y -= this.player.moveStep;
+    }
+    // S
+    if (inputBundle[83]) {
+      y += this.player.moveStep;
+    }
+    // A
+    if (inputBundle[65]) {
+      x -= this.player.moveStep;
+    }
+    // D
+    if (inputBundle[68]) {
+      x += this.player.moveStep;
+    }
+    this.player.movement(x, y);
   }
 
   /*

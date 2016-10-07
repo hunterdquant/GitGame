@@ -21,12 +21,13 @@ var stage = new Container(),
 document.body.appendChild(renderer.view);
 
 loader
-  .add("assets/tilesanim1.png")
-  .add("assets/tilesanim2.png")
-  .add("assets/tilesanim3.png")
-  .add("assets/tilesanim4.png")
-  .add("assets/tilesanim5.png")
-  .add("assets/tilesanim6.png")
+  .add('assets/tilesanim1.png')
+  .add('assets/tilesanim2.png')
+  .add('assets/tilesanim3.png')
+  .add('assets/tilesanim4.png')
+  .add('assets/tilesanim5.png')
+  .add('assets/tilesanim6.png')
+  .add('assets/GitGamePlayerSpriteSheet.png')
   .load(setup);
 
 tileFrames = {
@@ -43,6 +44,10 @@ tileFrames = {
   corner: [],
   warp: []
 };
+
+unitFrames = {
+  player: []
+}
 
 // Manipulates loaded resources
 function setup() {
@@ -76,6 +81,12 @@ function setup() {
   tileFrames.door2 = tileFrames.door2.concat(tileFrames.door2.slice(1, tileFrames.door2.length - 1).reverse());
   tileFrames.corner = tileFrames.corner.concat(tileFrames.corner.slice(1, tileFrames.corner.length - 1).reverse());
   tileFrames.warp = tileFrames.warp.concat(tileFrames.warp.slice(1, tileFrames.warp.length - 1).reverse());
+
+  let playerTiles = 16
+  let playerTexture = TextureCache['assets/GitGamePlayerSpriteSheet.png'];
+  for (var frame = 0; frame < 16; frame++) {
+    unitFrames.player.push(extractFrame(frame, 0, 100, 100, playerTexture));
+  }
   // End sprite sheet loading
   stage.addChild(gameScene);
   console.log('Setup complete');
