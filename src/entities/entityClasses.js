@@ -97,16 +97,42 @@ class Enemy extends Unit{
   console.log("An enemy is trying to get you! :O");
   }
 
-  attack() {
-  //To Be Implemented
-  console.log("An enemy shot at you :'(");
-  }
-
   collision() {
   //To Be Implemented
   console.log("You really let an enemy walk into you...?");
   }
 }
+
+//ERG Class
+//Extension of Enemy
+class ERG extends Enemy{
+  constructor(health, texture, x, y){
+    super(health, texture, x, y);
+    console.log("ERG Created");
+  }
+
+  //Moves an ERG Unit
+  //Attempts to take shortest path to a given point, usually the player position
+  //Takes in an x and y which are the position it is moving towards
+  movement(x, y) {
+  console.log("An ERG is trying to get you! :O");
+
+  var xsign = (x - this.x)?(x - this.x)<0?-1:1:0;
+  var ysign = (y - this.y)?(y - this.y)<0?-1:1:0;
+
+  this.x += xsign;
+  this.y += ysign;
+  this.animation.x = this.x;
+  this.animation.y = this.y;
+  }
+
+  collision() {
+  //To Be Implemented
+  console.log("You really let an ERG walk into you...?");
+  }
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Items/////////////////////////////////////////
@@ -144,7 +170,7 @@ class RecursionRiflePickup extends Item{
   collision(){
     //If its with a player, call modifier
     console.log("Hit a Recursion Rifle");
-  }
+}
 }
 
 //Key Value Duals Pickup Class
