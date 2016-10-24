@@ -6,8 +6,7 @@
 //Base of All Weapons, not directly used
 //Extension of Entity
 class Weapon {
-  constructor(x, y, texture, shoots, ammo){
-    super(x, y, texture);
+  constructor(x, y, texture, shoots, ammo) {
     this.x = x;
     this.y = y;
     this.rotation = 0;
@@ -20,17 +19,17 @@ class Weapon {
 
   /* Spawns a projectile and fires in the direction of the input vector */
   fire(vector) {
-
+    console.log('bang in ' + vector.x + " " + vector.y);
   }
 
   /* Updates the rotation and position of the weapon around the player */
   update(vector) {
-
+    console.log('updating weapon');
   }
 
   /* Updates weapons sprite */
   render() {
-
+    console.log('rendering weapon');
   }
 }
 

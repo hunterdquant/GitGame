@@ -345,6 +345,25 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+    // UP/DOWN
+    if (inputBundle[38]) {
+      y = 1
+    } else if (inputBundle[40]) {
+      y = -1;
+    } else {
+      y = 0;
+    }
+    // LEFT/RIGHT
+    if (inputBundle[37]) {
+      x = -1
+    } else if (inputBundle[39]) {
+      x = 1;
+    } else {
+      x = 0;
+    }
+    if (x !== 0 || y !== 0) {
+      this.player.attack({x:x,y:y});
+    }
   }
 
   /*

@@ -57,7 +57,7 @@ class Player extends Unit{
   constructor(x, y, frames, health, weapon, subWeapon){
     super(x, y, frames, health);
 
-    this.weapon = weapon;
+    this.weapon = new Weapon(x, y, frames[0], null, null);
     this.subWeapon = subWeapon;
     this.moveStep = 4;
     console.log("Player Created");
@@ -72,14 +72,13 @@ class Player extends Unit{
     this.animation.y = this.y;
   }
 
-  attack() {
-  //To Be Implemented
-  console.log("You attacked!");
+  attack(vector) {
+    this.weapon.fire(vector);
   }
 
   collision() {
-  //To Be Implemented
-  console.log("You ran into something....");
+    //To Be Implemented
+    console.log("You ran into something....");
   }
 
 }
