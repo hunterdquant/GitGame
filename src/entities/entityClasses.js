@@ -49,6 +49,31 @@ class Unit extends Entity{
     attack() {
       console.log("A Unit Attacked!");
     }
+
+    //Damage
+    //causes damage to a Unit
+    //Takes in a positive integer
+    damage(dam) {
+      this.health = this.health - dam;
+      console.log(this.health);
+    }
+
+    //getHealth
+    //returns the current health
+    getHealth() {
+      console.log(this.health);
+      return this.health;
+    }
+
+    //getPosition
+    //returns the positon [x,y]
+    getPosition() {
+      var pos = [this.x,this.y];
+      console.log(pos);
+      return pos;
+    }
+
+
 }
 
 //Player Class
@@ -125,6 +150,8 @@ class ERG extends Enemy{
   this.animation.x = this.x;
   this.animation.y = this.y;
   }
+
+
 
   collision() {
   //To Be Implemented
