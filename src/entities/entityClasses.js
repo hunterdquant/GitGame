@@ -68,7 +68,7 @@ class Unit extends Entity{
     //getPosition
     //returns the positon [x,y]
     getPosition() {
-      var pos = [this.x,this.y];
+      var pos = new vector(this.x,this.y);
       console.log(pos);
       return pos;
     }
@@ -159,6 +159,73 @@ class ERG extends Enemy{
   }
 }
 
+//RAM Class
+//Extension of Enemy
+class RAM extends Enemy{
+  constructor(health, texture, x, y){
+    super(health, texture, x, y);
+    console.log("RAM Created");
+
+    this.charging = false;
+    this.chargeDirectionX = 0;
+    this.chargeDirectionY = 0;
+  }
+
+  //Moves a RAM Unit
+  //Attempts to charge ar a player in only an x or y direction
+  //moves x or y, until within acceptable range to charge
+  movement(x, y) {
+    console.log("A RAM is trying to get you! :O");
+    var xdiff = x - this.x;
+    var ydiff = y - this.y;
+    if(this.charging == true){
+      console.log("Charging");
+      this.x += this.chargeDirectionX*5;
+      this.y += this.chargeDirectionY*5;
+      this.animation.x = this.x;
+      this.animation.y = this.y;
+    }
+
+    else if(Math.abs(xdiff) < 5){
+      console.log("Starting to charge Y");
+      this.chargeDirectionY = (ydiff)?(ydiff)<0?-1:1:0;
+      this.chargeDirectionX = 0;
+      this.charging = true;
+      this.y += this.chargeDirectionY*5;
+      this.animation.y = this.y;
+    }
+
+    else if(Math.abs(ydiff) < 5){
+      console.log("Starting to charge X");
+      this.chargeDirectionX = (xdiff)?(xdiff)<0?-1:1:0;
+      this.chargeDirectionY = 0;
+      this.charging = true;
+      this.x += this.chargeDirectionX*5;
+      this.animation.x = this.x;
+    }
+
+    else{
+      if(xdiff > ydiff){
+        console.log("Positioning y");
+        var sign = (ydiff)?(ydiff)<0?-1:1:0;
+        this.y += sign;
+        this.animation.y = this.y;
+      }
+
+      else{
+        console.log("Positioning X");
+        var sign = (xdiff)?(xdiff)<0?-1:1:0;
+        this.x += sign;
+        this.animation.x = this.x;
+      }
+    }
+  }
+
+  collision() {
+  //To Be Implemented
+  console.log("You really let a RAM hit you...?");
+  }
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////
