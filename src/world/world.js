@@ -102,7 +102,7 @@ class World {
 
   init() {
     if (this.currentNode !== null) {
-      this.player = new Player(100, (this.currentNode.height/3)*100, unitFrames.player, 100);
+      this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
       this.currentNode.init();
       this.currentNode.player.init();
@@ -326,8 +326,10 @@ class EnvNode {
     This function will update player state and render the player entity.
   */
   updatePlayer(inputBundle) {
+
     let x = 0;
     let y = 0;
+    // Check inputs and move if no collision
     // W
     if (inputBundle[87]) {
       y -= this.player.moveStep;
@@ -345,6 +347,30 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+
+    var colVec = null;
+    var colFound = false;
+    for (var tileLine of this.tileSet) {
+      for (var tile of tileLine) {
+        if (tile instanceof Wall) {
+          colVec = this.player.collision(tile);
+          if (colVec.x != 0 || colVec.y != 0) {
+            colFound = true;
+            break;
+          }
+        }
+      }
+      if (colFound) {
+        break;
+      }
+    }
+
+    if (colVec.x != 0) {
+      this.player.movement(-x, 0);
+    }
+    if (colVec.y != 0) {
+      this.player.movement(0, -y);
+    }
   }
 
   /*
@@ -383,15 +409,15 @@ class Tile {
     this.height = height;
     this.animation = new Movie(frames);
     if (xScale === -1) {
-      this.x += width;
+      x += width;
     }
     this.animation.scale.x = this.xScale;
     if (yScale === -1) {
-      this.y += height;
+      y += height;
     }
     this.animation.scale.y = this.yScale;
-    this.animation.x = this.x;
-    this.animation.y = this.y;
+    this.animation.x = x;
+    this.animation.y = y;
     this.animation.animationSpeed = .15;
   }
 
@@ -417,20 +443,6 @@ class Floor extends Tile {
 }
 
 class Wall extends Tile {
-  // Should probably be moved to player collision function when entities is merged in.
-  impulse(entity) {
-    if (entity instanceof Player) {
-      if (this.x + this.width > entity.x) {
-        entity.x = this.x + this.width;
-      } else if (this.x > entity.x + entity.width) {
-        entity.x = this.x - entity.x;
-      } else if (this.y + this.height > entity.y) {
-        entity.y = this.y + this.height;
-      } else if (this.y > entity.y + entity.width) {
-        entity.y = this.y - entity.y;
-      }
-    }
-  }
 }
 
 class Warp extends Tile {

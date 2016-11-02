@@ -1,9 +1,12 @@
 //Entity Class
 //Base of all Entities, not directly used
-class Entity /*extends Collidable*/ {
-  constructor(x, y, frames) {
+class Entity extends Collidable {
+  constructor(x, y, width, height, frames) {
+    super();
     this.x = x;
     this.y = y;
+    this.width = width;
+    this.height = height;
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
@@ -36,8 +39,8 @@ class Entity /*extends Collidable*/ {
 //Base of Different Units, not directly used
 //Extension of Entity
 class Unit extends Entity{
-    constructor(x, y, frames, health) {
-      super(x, y, frames);
+    constructor(x, y, width, height, frames, health) {
+      super(x, y, width, height, frames);
       this.health = health;
       console.log("Unit Created");
     }
@@ -54,9 +57,8 @@ class Unit extends Entity{
 //Player Class
 //Extension on Unit
 class Player extends Unit{
-  constructor(x, y, frames, health, weapon, subWeapon){
-    super(x, y, frames, health);
-
+  constructor(x, y, width, height, frames, health, weapon, subWeapon){
+    super(x, y, width, height, frames, health);
     this.weapon = weapon;
     this.subWeapon = subWeapon;
     this.moveStep = 4;
@@ -77,11 +79,16 @@ class Player extends Unit{
   console.log("You attacked!");
   }
 
-  collision() {
-  //To Be Implemented
-  console.log("You ran into something....");
+  collision(entity) {
+    // Get the direction of collision
+    return getCollision(this, entity);
   }
 
+  impulse(entity) {
+    if (entity instanceof Enemy) {
+      this.health -= entity.damage;
+    }
+  }
 }
 
 //Enemy Class
