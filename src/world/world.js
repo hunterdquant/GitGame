@@ -16,7 +16,6 @@ class World {
       this.envGraph.clear();
     }
     let parsedMeta = JSON.parse(metadata);
-    console.log(parsedMeta.commits);
     // Iterate over commit strings to build nodes.
     for (var commit in parsedMeta.commits) {
       let node = this.nodes[commit];
@@ -102,15 +101,26 @@ class World {
 
   init() {
     if (this.currentNode !== null) {
-      this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
+      this.player = new Player(100, (this.currentNode.height/2)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
       this.currentNode.init();
-      this.currentNode.player.init();
+      this.player.init();
     }
   }
 
   getCurrentNode() {
     return this.currentNode;
+  }
+
+  changeNode() {
+    this.currentNode.detach();7
+    this.currentNode = this.nodes[this.currentNode.doorTile.nodeHash];
+    this.player.x = 100;
+    this.player.y = (this.currentNode.height/2)*100;
+    this.currentNode.init();
+    this.currentNode.leaving = false;
+    this.player.init();
+    this.currentNode.player = this.player;
   }
 }
 
@@ -215,6 +225,8 @@ class EnvNode {
       this.parents = [];
       this.visited = false;
       this.entities = {};
+      this.leaving = false;
+      this.doorTile = null;
   }
 
   /*
@@ -231,22 +243,23 @@ class EnvNode {
     if (this.neighbors.length - this.parents.length > 2*(this.width - 2)) {
       this.width = this.neighbors.length - this.parents.length + 2;
     }
-
     this.tileSet = new Array(this.width);
     for (var i = 0; i < this.tileSet.length; i++) {
       this.tileSet[i] = new Array(this.height);
+      for (var j = 0; j < this.height; j++) {
+        this.tileSet[i][j] = null;
+      }
     }
-
 
     //The four corners are produced:
     this.tileSet[0][0] = new Wall(0, 0, 1, -1, 100, 100, tileFrames.corner);
-    this.tileSet[0][this.height - 1] = new Wall(0, 100*(this.height - 3), 1, 1, 100, 100, tileFrames.corner);
-    this.tileSet[this.width - 1][0] = new Wall(100*(this.width - 3), 0, -1, -1, 100, 100, tileFrames.corner);
-    this.tileSet[this.width - 1][this.height - 1] = new Wall(100*(this.width - 3), 100*(this.height - 3), -1, 1, 100, 100, tileFrames.corner);
+    this.tileSet[0][this.height - 1] = new Wall(0, 100*(this.height - 1), 1, 1, 100, 100, tileFrames.corner);
+    this.tileSet[this.width - 1][0] = new Wall(100*(this.width - 1), 0, -1, -1, 100, 100, tileFrames.corner);
+    this.tileSet[this.width - 1][this.height - 1] = new Wall(100*(this.width - 1), 100*(this.height - 1), -1, 1, 100, 100, tileFrames.corner);
 
 		//The floor is produced
-    for (var i = 1; i < this.width - 3; i++) {
-      for (var j = 1; j < this.height - 3; j++) {
+    for (var i = 1; i < this.width - 1; i++) {
+      for (var j = 1; j < this.height - 1; j++) {
         this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
       }
     }
@@ -276,7 +289,7 @@ class EnvNode {
 
     for(var neighbor of this.neighbors){
       if(this.parents.includes(neighbor) == false){ //Only do them doors that are not part of parents already :)))))
-        this.tileSet[this.width-1][Pindex] = new Door(100*(this.width-3), 100*Pindex, -1, 1, 100, 100, tileFrames.door1, neighbor);
+        this.tileSet[this.width-1][Pindex] = new Door(100*(this.width-1), 100*Pindex, -1, 1, 100, 100, tileFrames.door1, neighbor);
         if(direction){
           Pindex = Pindex + jump;
           direction = false;
@@ -290,18 +303,18 @@ class EnvNode {
     }
 
   	//The remaining walls are produced
-  	for(var i = 1; i<this.height - 3; i++){
+  	for(var i = 1; i<this.height - 1; i++){
 
   		if(this.tileSet[0][i] == null){
   			this.tileSet[0][i] = new Wall(0, (100*i), 1, 1, 100, 100, tileFrames.wall1); //Left Walls
   		}
   		if(this.tileSet[this.width-1][i] == null){
-  			this.tileSet[this.width - 1][i] = new Wall(100*(this.width-3), (100*i), -1, 1, 100, 100, tileFrames.wall1); //Right walls
+  			this.tileSet[this.width - 1][i] = new Wall(100*(this.width-1), (100*i), -1, 1, 100, 100, tileFrames.wall1); //Right walls
   		}
   	}
-  	for(var i = 1; i<this.width - 3; i++){
+  	for(var i = 1; i<this.width - 1; i++){
   			this.tileSet[i][0] = new Wall( (100*i), 0, 1, 1, 100, 100, tileFrames.wall2); //Top Walls
-  			this.tileSet[i][this.height-1] = new Wall((100*i), 100*(this.height-3), 1, -1, 100, 100, tileFrames.wall2); //Bottom Walls
+  			this.tileSet[i][this.height-1] = new Wall((100*i), 100*(this.height-1), 1, -1, 100, 100, tileFrames.wall2); //Bottom Walls
   	}
   }
 
@@ -358,6 +371,13 @@ class EnvNode {
             colFound = true;
             break;
           }
+        } else if (tile instanceof Door) {
+          colVec = this.player.collision(tile);
+          if (colVec.x != 0 || colVec.y != 0) {
+            this.leaving = true;
+            this.doorTile = tile;
+            break;
+          }
         }
       }
       if (colFound) {
@@ -395,7 +415,12 @@ class EnvNode {
   }
 
   detach() {
-
+    for (var row of this.tileSet) {
+      for (var tile of row) {
+        tile.detach();
+      }
+    }
+    this.player.detach();
   }
 }
 
