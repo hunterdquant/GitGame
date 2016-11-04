@@ -22,7 +22,7 @@ class Entity /*extends Collidable*/ {
     gameScene.addChild(this.animation);
   }
 
-  detach() {
+  de:tach() {
     this.animation.stop();
     gameScene.removeChild(this.animation);
   }
@@ -189,72 +189,108 @@ class MaxHeapBlunderbussPickup extends Item{
 ////////////////////////////////Bullets////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//Bullet Class
+//Vector Class, which will be moving the sprites
+class Vector{
+	constructor(x, y){
+		this.x = x;
+		this.y = y;
+	}
+}
+
+
+
+//Projectile Class
 //Base of All Bullets, not directly used
 //Extension of Entity
-class Bullet extends Entity{
-  constructor(x, y, texture, damage){
+class Projectile extends Entity{ //Base class is pretty simple
+  constructor(x, y, texture, damage, VectorIn){
     super(x, y, texture);
     this.damage = damage;
-    console.log("Bullet Created");
+    this.direction = new Vector(VectorIn.x, VectorIn.y);
+    console.log("Projectile Created");
   }
 
-  //Will Be Defined for Each Type of Bullet
+  //Will Be Defined for Each Type of Projectile
 trajectory(){
-    console.log("This Bullet is going places!");
+    console.log("This Projectile is going places!");
   }
 }
 
 //Beam Class
-//Extension of Bullet
-class Beam extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Beam extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Beam Created");
   }
-
   trajectory(){
-    console.log("This Beam is going places!");
+    this.x = Player.x; //Name of player? Reference wrong?
+    console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
   }
-
-  collision(){
+  render(){
+    
+    //Stretch texture? For now surely we could just draw a long beam picture, optimization be damned.
+  }
+  collision(entity){
     console.log("This Beam hit something!");
+    //No further methods, a beam won't dissapear or anything just because it hit something - instead it will exist across it's 'lifespan'
   }
-
+  impulse(entity){
+    if (entity instanceOf Enemy){
+      //Call the damage function.
+    }
+  }
 }
 
 //Bullets Class
-//Extension of Bullet
-class Bullets extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Bullets extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
+    this.lifespan = 600; //lifespan variable is important for fading away
     console.log("Bullets Created");
   }
-
   trajectory(){
     console.log("These Bullets are going places!");
+    this.x = this.x+VectorIn.x;
+    this.y = this.y+VectorIn.y;
   }
-
-  collision(){
-    console.log("These Bullets hit something!");
+  render(){
+    //Move sprite by VectorIn
   }
-
+  collision(entity){
+    //Delete this Bullet
+  }
+  impulse(entity){
+    if(entity InstanceOf enemy){ //damage the enemy if it is an enemy
+     //Call the damage function
+    }
+  }
 }
 
 //Spread Class
-//Extension of Bullet
-class Spread extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Spread extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Spread Created");
   }
 
   trajectory(){
-    console.log("This Spread is going everywhere!");
+    this.lifespan--;
+    console.log("This Spread is staying put!"); //I don't believe spread should ever move - it should 'appear' at once and then fade.
+  }
+  
+  render(){
+    //Just draw the correct frame based on lifespan - I'll have a 'puff of smoke' animation
   }
 
-  collision(){
-    console.log("This Spread hit everything!");
+  //no collision for this projectile either - spread just exists, it doesn't 'get hit' by anything, it only hits in impulse().
+  
+  impulse(entity){ //But it does damage things it touches!
+    if(entity instanceOf enemy){
+      //Call the damage function
+    }
   }
 
 }
@@ -281,6 +317,10 @@ class MaxHeapBlunderbuss extends Weapon{
   constructor(x, y, texture, ammo){
     super(x, y, texture, "Spread", ammo);
     console.log("Max Heap Blunderbuss Created");
+  }
+
+  render(){
+   
   }
 
   collision(){
