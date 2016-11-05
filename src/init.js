@@ -28,6 +28,9 @@ loader
   .add('assets/tilesanim5.png')
   .add('assets/tilesanim6.png')
   .add('assets/GitGamePlayerSpriteSheet.png')
+  .add('assets/RecursionRifle.png')
+  .add('assets/KeyValueDuals.png')
+  .add('assets/MaxHeapBlunerbuss.png')
   .load(setup);
 
 tileFrames = {
@@ -48,6 +51,12 @@ tileFrames = {
 unitFrames = {
   player: []
 }
+
+weaponTextures = {
+  recursionRifle: null,
+  keyValueDuals: null,
+  maxHeapBlunderbuss: null
+};
 
 // Manipulates loaded resources
 function setup() {
@@ -87,6 +96,11 @@ function setup() {
   for (var frame = 0; frame < 16; frame++) {
     unitFrames.player.push(extractFrame(frame, 0, 100, 100, playerTexture));
   }
+
+  weaponTextures.recursionRifle = TextureCache['assets/RecursionRifle.png'];
+  weaponTextures.keyValueDuals = TextureCache['assets/KeyValueDuals.png'];
+  weaponTextures.maxHeapBlunderbuss = TextureCache['assets/MaxHeapBlunerbuss.png'];
+
   // End sprite sheet loading
   stage.addChild(gameScene);
   console.log('Setup complete');

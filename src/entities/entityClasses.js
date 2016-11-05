@@ -56,8 +56,7 @@ class Unit extends Entity{
 class Player extends Unit{
   constructor(x, y, frames, health, weapon, subWeapon){
     super(x, y, frames, health);
-
-    this.weapon = new Weapon(x, y, frames[0], null, null);
+    this.weapon = new RecursionRifle(x, y+25, weaponTextures.recursionRifle, this.x, this.y);
     this.subWeapon = subWeapon;
     this.moveStep = 4;
     console.log("Player Created");
@@ -70,6 +69,7 @@ class Player extends Unit{
     this.y = this.y + y;
     this.animation.x = this.x;
     this.animation.y = this.y;
+    this.weapon.sendPos(this.x, this.y);
   }
 
   attack(vector) {

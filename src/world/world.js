@@ -106,6 +106,7 @@ class World {
       this.currentNode.player = this.player;
       this.currentNode.init();
       this.currentNode.player.init();
+      this.currentNode.player.weapon.init();
     }
   }
 
@@ -345,6 +346,7 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+    this.player.weapon.update(x,y);
     // UP/DOWN
     if (inputBundle[38]) {
       y = 1
@@ -363,6 +365,7 @@ class EnvNode {
     }
     if (x !== 0 || y !== 0) {
       this.player.attack({x:x,y:y});
+      this.player.weapon.render({x:x, y:y});
     }
   }
 
