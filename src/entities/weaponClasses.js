@@ -35,7 +35,7 @@ class Weapon {
 
   /* Updates weapons sprite */
   render(vector) {
-    let rotatePos = rotateLookup(vector.x, vector.y);
+    let rotatePos = this.rotateLookup(vector.x, vector.y);
     // console.log(rotatePos);
     this.x = this.playerX + rotatePos.x;
     this.y = this.playerY + -rotatePos.y;
@@ -49,36 +49,16 @@ class Weapon {
     this.playerY = y;
   }
 
+  rotateLookup(x, y) {
+    
+  } 
+
   init() {
     gameScene.addChild(this.sprite);
   }
 }
 
-function rotateLookup(x,y) {
-  let rad = function(deg) {
-    return deg * Math.PI / 180;
-  }
 
-  let table = [
-    [ // X = -1
-      {x: 45, y: -50, rot: rad(-225)}, // Y = -1 (bottom-left)
-      {x: 35, y: -60, rot: rad(180)}, // Y = 0 (left)
-      {x: 0, y: -70, rot: rad(-135)} // Y = 1 (top-left)
-    ],
-    [ // X = 0
-      {x: 105, y: -20, rot: rad(-270)}, // Y = -1 (bottom)
-      {x: 0, y: 0, rot: rad(0)}, // Y = 0 (center)
-      {x: 50, y: -40, rot: rad(-90)} // Y = 1 (top)
-    ],
-    [ // X = 1
-      {x: 80, y: -10, rot: rad(-315)}, // Y = -1 (bottom-right)
-      {x: 55, y: 0, rot: rad(0)}, // Y = 0 (right)
-      {x: 45, y: -10, rot: rad(-45)} // Y = 1 (top-right)
-    ]
-  ];
-
-  return table[x+1][y+1];
-}
 
 //Max Heap Blunderbuss Class
 //Extension of Weapon
@@ -104,5 +84,31 @@ class RecursionRifle extends Weapon {
   constructor(x, y, texture, playerX, playerY) {
     super(x, y, texture, playerX, playerY);
     console.log("Recursion Rifle Created");
+  }
+
+  rotateLookup(x,y) {
+    let rad = function(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    let table = [
+      [ // X = -1
+        {x: 45, y: -50, rot: rad(-225)}, // Y = -1 (bottom-left)
+        {x: 35, y: -60, rot: rad(180)}, // Y = 0 (left)
+        {x: 0, y: -70, rot: rad(-135)} // Y = 1 (top-left)
+      ],
+      [ // X = 0
+        {x: 105, y: -20, rot: rad(-270)}, // Y = -1 (bottom)
+        {x: 0, y: 0, rot: rad(0)}, // Y = 0 (center)
+        {x: 50, y: -40, rot: rad(-90)} // Y = 1 (top)
+      ],
+      [ // X = 1
+        {x: 80, y: -10, rot: rad(-315)}, // Y = -1 (bottom-right)
+        {x: 55, y: 0, rot: rad(0)}, // Y = 0 (right)
+        {x: 45, y: -10, rot: rad(-45)} // Y = 1 (top-right)
+      ]
+    ];
+
+    return table[x+1][y+1];
   }
 }
