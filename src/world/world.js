@@ -227,6 +227,8 @@ class EnvNode {
       this.entities = {};
       this.leaving = false;
       this.doorTile = null;
+      this.projectiles = [];
+      this.enemies = [];
   }
 
   /*
@@ -323,16 +325,8 @@ class EnvNode {
     inputBundle - an object containing information about user input.
   */
   update(inputBundle) {
-    // this.updateTiles();
     this.updatePlayer(inputBundle);
-    // this.updateEntities();
-  }
-
-  /*
-    This will render all backgroud game tiles.
-  */
-  updateTiles() {
-    console.log('Tiles ' + this.tileSet);
+    this.updateEntities();
   }
 
   /*
@@ -358,17 +352,6 @@ class EnvNode {
     // D
     if (inputBundle[68]) {
       x += this.player.moveStep;
-    }
-    var tileNum = 0;
-    var colFound = false;
-    for (var tileLine of this.tileSet) {
-      for (var tile of tileLine) {
-        var colision = getSATCollision(this.player, tile);
-        if (colision) {
-          console.log("Hit " + tileNum);
-        }
-        tileNum++;
-      }
     }
     this.player.movement(x, y);
 
@@ -408,7 +391,18 @@ class EnvNode {
     This function will render all non player entities and update their state.
   */
   updateEntities() {
-    console.log('Entities ' + this.entities);
+    for (var enemy of this.enemies) {
+      enemy.update();
+    }
+    for (var projectile of this.projectiles) {
+      projectile.trajectory();
+      for (var enemy of this.enemies) {
+        var collided = getSATCollision(projectile, enemy);
+        if (collided) {
+          projectile.impulse(enemy);
+        }
+      }
+    }
   }
 
   init() {
