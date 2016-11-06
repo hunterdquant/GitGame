@@ -1,9 +1,11 @@
 //Entity Class
 //Base of all Entities, not directly used
 class Entity /*extends Collidable*/ {
-  constructor(x, y, frames) {
+  constructor(x, y, width, height, frames) {
     this.x = x;
     this.y = y;
+    this.width = width;
+    this.height = height;
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
@@ -36,8 +38,8 @@ class Entity /*extends Collidable*/ {
 //Base of Different Units, not directly used
 //Extension of Entity
 class Unit extends Entity{
-    constructor(x, y, frames, health) {
-      super(x, y, frames);
+    constructor(x, y, width, height, frames, health) {
+      super(x, y, width, height, frames);
       this.health = health;
       console.log("Unit Created");
     }
@@ -79,8 +81,8 @@ class Unit extends Entity{
 //Player Class
 //Extension on Unit
 class Player extends Unit{
-  constructor(x, y, frames, health, weapon, subWeapon){
-    super(x, y, frames, health);
+  constructor(x, y, width, height, frames, health, weapon, subWeapon){
+    super(x, y, width, height, frames, health);
 
     this.weapon = weapon;
     this.subWeapon = subWeapon;
@@ -112,8 +114,13 @@ class Player extends Unit{
 //Enemy Class
 //Extension of Unit
 class Enemy extends Unit{
-  constructor(health, texture, x, y){
-    super(x, y, texture, health);
+  constructor(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax){
+    super(x, y, width, height, texture, health);
+    this.speed = speed;
+    this.xmin = xmin;
+    this.xmax = xmax;
+    this.ymin = ymin;
+    this.ymax = ymax;
     console.log("Enemy Created");
   }
 
@@ -131,8 +138,8 @@ class Enemy extends Unit{
 //ERG Class
 //Extension of Enemy
 class ERG extends Enemy{
-  constructor(health, texture, x, y){
-    super(health, texture, x, y);
+  constructor(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax){
+    super(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax);
     console.log("ERG Created");
   }
 
@@ -145,8 +152,25 @@ class ERG extends Enemy{
   var xsign = (x - this.x)?(x - this.x)<0?-1:1:0;
   var ysign = (y - this.y)?(y - this.y)<0?-1:1:0;
 
-  this.x += xsign;
-  this.y += ysign;
+  if(this.x + xsign*this.speed + this.width > this.xmax){
+    this.x = this.xmax - this.width;
+  }
+  else if(this.x + xsign*this.speed < this.xmin){
+    this.x = this.xmin;
+  }
+  else{
+    this.x += xsign*this.speed;
+  }
+  if(this.y + ysign*this.speed + this.height > this.ymax){
+    this.y = this.ymax - this.height;
+  }
+  else if(this.y + ysign*this.speed < this.ymin){
+    this.y = this.ymin;
+  }
+  else {
+    this.y += ysign*this.speed;
+  }
+
   this.animation.x = this.x;
   this.animation.y = this.y;
   }
@@ -162,13 +186,16 @@ class ERG extends Enemy{
 //RAM Class
 //Extension of Enemy
 class RAM extends Enemy{
-  constructor(health, texture, x, y){
-    super(health, texture, x, y);
+  constructor(x, y, width, height, movingTexture, chargingTexture, health, speed, xmin, xmax, ymin, ymax){
+    super(x, y, width, height, movingTexture, health, speed, xmin, xmax, ymin, ymax);
     console.log("RAM Created");
 
+    this.movingTexture = movingTexture;
+    this.chargingTexture = chargingTexture;
     this.charging = false;
     this.chargeDirectionX = 0;
     this.chargeDirectionY = 0;
+
   }
 
   //Moves a RAM Unit
@@ -180,8 +207,31 @@ class RAM extends Enemy{
     var ydiff = y - this.y;
     if(this.charging == true){
       console.log("Charging");
-      this.x += this.chargeDirectionX*5;
-      this.y += this.chargeDirectionY*5;
+      if(this.x + this.width + this.chargeDirectionX*5*this.speed >= this.xmax){
+        this.x = this.xmax - this.width;
+        this.charging = false;
+        this.animation.setTexture(this.movingTexture);
+      }
+      else if(this.x + this.chargeDirectionX*5*this.speed <= this.xmin){
+        this.x = this.xmin;
+        this.charging = false;
+        this.animation.setTexture(this.movingTexture);
+      }
+      else if(this.y + this.height + this.chargeDirectionY*5*this.speed >= this.ymax){
+        this.y = this.ymax - this.width;
+        this.charging = false;
+        this.animation.setTexture(this.movingTexture);
+      }
+      else if(this.y + this.chargeDirectionY*5*this.speed <= this.ymin){
+        this.y = this.ymin;
+        this.charging = false;
+        this.animation.setTexture(this.movingTexture);
+      }
+      else{
+        this.x += this.chargeDirectionX*this.speed*5;
+        this.y += this.chargeDirectionY*this.speed*5;
+      }
+
       this.animation.x = this.x;
       this.animation.y = this.y;
     }
@@ -191,8 +241,7 @@ class RAM extends Enemy{
       this.chargeDirectionY = (ydiff)?(ydiff)<0?-1:1:0;
       this.chargeDirectionX = 0;
       this.charging = true;
-      this.y += this.chargeDirectionY*5;
-      this.animation.y = this.y;
+      this.animation.setTexture(this.chargingTexture);
     }
 
     else if(Math.abs(ydiff) < 5){
@@ -200,22 +249,37 @@ class RAM extends Enemy{
       this.chargeDirectionX = (xdiff)?(xdiff)<0?-1:1:0;
       this.chargeDirectionY = 0;
       this.charging = true;
-      this.x += this.chargeDirectionX*5;
-      this.animation.x = this.x;
+      this.animation.setTexture(this.chargingTexture);
     }
 
     else{
       if(xdiff > ydiff){
         console.log("Positioning y");
         var sign = (ydiff)?(ydiff)<0?-1:1:0;
-        this.y += sign;
+        if(this.y + sign*this.speed + this.height > this.ymax){
+          this.y = this.height = this.ymax;
+        }
+        else if(this.y + sign*this.speed < this.ymin){
+          this.y = this.ymin
+        }
+        else{
+          this.y += sign*this.speed;
+        }
         this.animation.y = this.y;
       }
 
       else{
         console.log("Positioning X");
         var sign = (xdiff)?(xdiff)<0?-1:1:0;
-        this.x += sign;
+        if(this.x + sign*this.speed + this.width > this.xmax){
+          this.x = this.width = this.xmax;
+        }
+        else if(this.x + sign*this.speed < this.xmin){
+          this.x = this.xmin
+        }
+        else{
+          this.x += sign*this.speed;
+        }
         this.animation.x = this.x;
       }
     }
@@ -227,6 +291,53 @@ class RAM extends Enemy{
   }
 }
 
+class RNG extends Enemy{
+  constructor(x, y, width, height, texture, shadowTexture, health, speed, xmin, xmax, ymin, ymax, endTime){
+    super(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax);
+    this.shadowTexture = shadowTexture;
+    this.collidable = true;
+    this.endTime = endTime;
+    this.timer = 0;
+    console.log("RNG Created");
+  }
+
+  movement(){
+      if(this.timer == Math.floor(this.endTime/2)){
+        this.throwShadow();
+        this.timer++;
+      }
+      else if(this.timer == this.endTime){
+        this.x = this.shadowAnimation.x;
+        this.y = this.shadowAnimation.y;
+        this.animation.x = this.x;
+        this.animation.y = this.y;
+        this.collidable = true;
+        delete this.shadowAnimation;
+
+        this.timer = 0;
+      }
+      else{
+        this.timer++;
+      }
+  }
+
+  throwShadow(){
+    var x = Math.floor((Math.random() * ((this.xmax - this.width) - this.xmin)) + this.xmin);
+    var y = Math.floor((Math.random() * ((this.ymax - this.height) - this.ymin)) + this.ymin);
+    if()
+    this.collidable = false;
+    this.shadowAnimation = new Movie(this.shadowTexture);
+    this.shadowAnimation.x = x;
+    this.shadowAnimation.y = y;
+    this.shadowAnimation.animationSpeed = .25;
+    console.log("Shadow Created");
+
+  }
+
+
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////Items/////////////////////////////////////////
@@ -236,8 +347,8 @@ class RAM extends Enemy{
 //Base of All Items, not directly used
 //Extension of Entity
 class Item extends Entity{
-  constructor(x, y, texture){
-    super(x, y, texture);
+  constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture);
     console.log("Item Created");
   }
 
@@ -251,8 +362,8 @@ class Item extends Entity{
 //Recursion Rifle Pickup Class
 //Extension of Item
 class RecursionRiflePickup extends Item{
-  constructor(x, y, texture){
-    super(x, y, texture);
+  constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture);
     console.log("Recursion Rifle Pickup Created");
   }
 
@@ -270,8 +381,8 @@ class RecursionRiflePickup extends Item{
 //Key Value Duals Pickup Class
 //Extension of Item
 class KeyValueDualsPickup extends Item{
-  constructor(x, y, texture){
-    super(x, y, texture);
+  constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture);
     console.log("Key Value Duals Pickup Created");
   }
 
@@ -289,8 +400,8 @@ class KeyValueDualsPickup extends Item{
 //Max Heap Blunderbuss Pickup Class
 //Extension of Item
 class MaxHeapBlunderbussPickup extends Item{
-  constructor(x, y, texture){
-    super(x, y, texture);
+  constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture);
     console.log("Max Heap Blunderbuss Pickup Created");
   }
 
@@ -313,7 +424,7 @@ class MaxHeapBlunderbussPickup extends Item{
 //Base of All Bullets, not directly used
 //Extension of Entity
 class Bullet extends Entity{
-  constructor(x, y, texture, damage){
+  constructor(x, y, width, height, texture, damage){
     super(x, y, texture);
     this.damage = damage;
     console.log("Bullet Created");
@@ -328,7 +439,7 @@ trajectory(){
 //Beam Class
 //Extension of Bullet
 class Beam extends Bullet{
-  constructor(x, y, texture, damage){
+  constructor(x, y, width, height, texture, damage){
     super(x, y, texture, damage);
     console.log("Beam Created");
   }
@@ -346,7 +457,7 @@ class Beam extends Bullet{
 //Bullets Class
 //Extension of Bullet
 class Bullets extends Bullet{
-  constructor(x, y, texture, damage){
+  constructor(x, y, width, height, texture, damage){
     super(x, y, texture, damage);
     console.log("Bullets Created");
   }
@@ -364,7 +475,7 @@ class Bullets extends Bullet{
 //Spread Class
 //Extension of Bullet
 class Spread extends Bullet{
-  constructor(x, y, texture, damage){
+  constructor(x, y, width, height, texture, damage){
     super(x, y, texture, damage);
     console.log("Spread Created");
   }
@@ -387,7 +498,7 @@ class Spread extends Bullet{
 //Base of All Weapons, not directly used
 //Extension of Entity
 class Weapon extends Entity{
-  constructor(x, y, texture, shoots, ammo){
+  constructor(x, y, width, height, texture, shoots, ammo){
     super(x, y, texture);
     this.shoots = shoots;
     this.ammo = ammo;
@@ -398,7 +509,7 @@ class Weapon extends Entity{
 //Max Heap Blunderbuss Class
 //Extension of Weapon
 class MaxHeapBlunderbuss extends Weapon{
-  constructor(x, y, texture, ammo){
+  constructor(x, y, width, height, texture, ammo){
     super(x, y, texture, "Spread", ammo);
     console.log("Max Heap Blunderbuss Created");
   }
@@ -411,7 +522,7 @@ class MaxHeapBlunderbuss extends Weapon{
 //Key Value Duals Class
 //Extension of Weapon
 class KeyValueDuals extends Weapon{
-  constructor(x, y, texture, ammo){
+  constructor(x, y, width, height, texture, ammo){
     super(x, y, texture, "Bullets", ammo);
     console.log("Key Value Duals Created");
   }
@@ -424,7 +535,7 @@ class KeyValueDuals extends Weapon{
 //Recursion Rifle Class
 //Extension of Weapon
 class RecursionRifle extends Weapon{
-  constructor(x, y, texture, ammo){
+  constructor(x, y, width, height, texture, ammo){
     super(x, y, texture, "Beam", ammo);
     console.log("Recursion Rifle Created");
   }
