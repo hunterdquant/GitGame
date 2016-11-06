@@ -359,6 +359,17 @@ class EnvNode {
     if (inputBundle[68]) {
       x += this.player.moveStep;
     }
+    var tileNum = 0;
+    var colFound = false;
+    for (var tileLine of this.tileSet) {
+      for (var tile of tileLine) {
+        var colision = getSATCollision(this.player, tile);
+        if (colision) {
+          console.log("Hit " + tileNum);
+        }
+        tileNum++;
+      }
+    }
     this.player.movement(x, y);
 
     var colVec = null;
@@ -449,6 +460,7 @@ class Tile {
   init() {
     this.animation.play();
     gameScene.addChild(this.animation);
+    this.animation.calculateVertices();
   }
 
   detach() {

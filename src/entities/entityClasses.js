@@ -7,9 +7,11 @@ class Entity extends Collidable {
     this.y = y;
     this.width = width;
     this.height = height;
+    this.rotation = 0;
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
+    this.animation.rotation = 0;
     this.animation.animationSpeed = .25;
 
     console.log("Entity Created");
@@ -23,9 +25,10 @@ class Entity extends Collidable {
   init() {
     this.animation.play();
     gameScene.addChild(this.animation);
+    this.animation.calculateVertices();
   }
 
-  de:tach() {
+  detach() {
     this.animation.stop();
     gameScene.removeChild(this.animation);
   }
@@ -81,7 +84,7 @@ class Player extends Unit{
 
   collision(entity) {
     // Get the direction of collision
-    return getCollision(this, entity);
+    return getBoxCollision(this, entity);
   }
 
   impulse(entity) {
@@ -196,16 +199,6 @@ class MaxHeapBlunderbussPickup extends Item{
 ////////////////////////////////Bullets////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//Vector Class, which will be moving the sprites
-class Vector{
-	constructor(x, y){
-		this.x = x;
-		this.y = y;
-	}
-}
-
-
-
 //Projectile Class
 //Base of All Bullets, not directly used
 //Extension of Entity
@@ -235,7 +228,7 @@ class Beam extends Projectile{
     console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
   }
   render(){
-    
+
     //Stretch texture? For now surely we could just draw a long beam picture, optimization be damned.
   }
   collision(entity){
@@ -243,8 +236,8 @@ class Beam extends Projectile{
     //No further methods, a beam won't dissapear or anything just because it hit something - instead it will exist across it's 'lifespan'
   }
   impulse(entity){
-    if (entity instanceOf Enemy){
-      //Call the damage function.
+    if(entity instanceof Enemy){
+      //Call the damage function
     }
   }
 }
@@ -269,8 +262,8 @@ class Bullets extends Projectile{
     //Delete this Bullet
   }
   impulse(entity){
-    if(entity InstanceOf enemy){ //damage the enemy if it is an enemy
-     //Call the damage function
+    if(entity instanceof Enemy){
+      //Call the damage function
     }
   }
 }
@@ -287,19 +280,18 @@ class Spread extends Projectile{
     this.lifespan--;
     console.log("This Spread is staying put!"); //I don't believe spread should ever move - it should 'appear' at once and then fade.
   }
-  
+
   render(){
     //Just draw the correct frame based on lifespan - I'll have a 'puff of smoke' animation
   }
 
   //no collision for this projectile either - spread just exists, it doesn't 'get hit' by anything, it only hits in impulse().
-  
+
   impulse(entity){ //But it does damage things it touches!
-    if(entity instanceOf enemy){
+    if(entity instanceof Enemy){
       //Call the damage function
     }
   }
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -327,7 +319,7 @@ class MaxHeapBlunderbuss extends Weapon{
   }
 
   render(){
-   
+
   }
 
   collision(){
