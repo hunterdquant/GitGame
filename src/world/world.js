@@ -393,6 +393,10 @@ class EnvNode {
   updateEntities() {
     for (var enemy of this.enemies) {
       enemy.update();
+      var collided = getSATCollision(projectile, enemy);
+      if (collided) {
+        projectile.impulse(enemy);
+      }
     }
     for (var projectile of this.projectiles) {
       projectile.trajectory();
