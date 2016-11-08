@@ -1,12 +1,17 @@
 //Entity Class
 //Base of all Entities, not directly used
-class Entity /*extends Collidable*/ {
-  constructor(x, y, frames) {
+class Entity extends Collidable {
+  constructor(x, y, width, height, frames) {
+    super();
     this.x = x;
     this.y = y;
+    this.width = width;
+    this.height = height;
+    this.rotation = 0;
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
+    this.animation.rotation = 0;
     this.animation.animationSpeed = .25;
 
     console.log("Entity Created");
@@ -20,6 +25,7 @@ class Entity /*extends Collidable*/ {
   init() {
     this.animation.play();
     gameScene.addChild(this.animation);
+    this.animation.calculateVertices();
   }
 
   detach() {
@@ -36,8 +42,8 @@ class Entity /*extends Collidable*/ {
 //Base of Different Units, not directly used
 //Extension of Entity
 class Unit extends Entity{
-    constructor(x, y, frames, health) {
-      super(x, y, frames);
+    constructor(x, y, width, height, frames, health) {
+      super(x, y, width, height, frames);
       this.health = health;
       console.log("Unit Created");
     }
@@ -54,8 +60,8 @@ class Unit extends Entity{
 //Player Class
 //Extension on Unit
 class Player extends Unit{
-  constructor(x, y, frames, health, weapon, subWeapon){
-    super(x, y, frames, health);
+  constructor(x, y, width, height, frames, health, weapon, subWeapon){
+    super(x, y, width, height, frames, health);
     this.weapon = new RecursionRifle(x, y+25, weaponTextures.recursionRifle, this.x, this.y);
     this.subWeapon = subWeapon;
     this.moveStep = 4;
@@ -76,11 +82,16 @@ class Player extends Unit{
     this.weapon.fire(vector);
   }
 
-  collision() {
-    //To Be Implemented
-    console.log("You ran into something....");
+  collision(entity) {
+    // Get the direction of collision
+    return getBoxCollision(this, entity);
   }
 
+  impulse(entity) {
+    if (entity instanceof Enemy) {
+      this.health -= entity.damage;
+    }
+  }
 }
 
 //Enemy Class
@@ -188,71 +199,97 @@ class MaxHeapBlunderbussPickup extends Item{
 ////////////////////////////////Bullets////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//Bullet Class
+//Projectile Class
 //Base of All Bullets, not directly used
 //Extension of Entity
-class Bullet extends Entity{
-  constructor(x, y, texture, damage){
+class Projectile extends Entity{ //Base class is pretty simple
+  constructor(x, y, texture, damage, VectorIn){
     super(x, y, texture);
     this.damage = damage;
-    console.log("Bullet Created");
+    this.direction = new Vector(VectorIn.x, VectorIn.y);
+    console.log("Projectile Created");
   }
 
-  //Will Be Defined for Each Type of Bullet
+  //Will Be Defined for Each Type of Projectile
 trajectory(){
-    console.log("This Bullet is going places!");
+    console.log("This Projectile is going places!");
   }
 }
 
 //Beam Class
-//Extension of Bullet
-class Beam extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Beam extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Beam Created");
   }
-
   trajectory(){
-    console.log("This Beam is going places!");
+    this.x = Player.x; //Name of player? Reference wrong?
+    console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
   }
+  render(){
 
-  collision(){
+    //Stretch texture? For now surely we could just draw a long beam picture, optimization be damned.
+  }
+  collision(entity){
     console.log("This Beam hit something!");
+    //No further methods, a beam won't dissapear or anything just because it hit something - instead it will exist across it's 'lifespan'
   }
-
+  impulse(entity){
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
+  }
 }
 
 //Bullets Class
-//Extension of Bullet
-class Bullets extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Bullets extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
+    this.lifespan = 600; //lifespan variable is important for fading away
     console.log("Bullets Created");
   }
-
   trajectory(){
     console.log("These Bullets are going places!");
+    this.x = this.x+VectorIn.x;
+    this.y = this.y+VectorIn.y;
   }
-
-  collision(){
-    console.log("These Bullets hit something!");
+  render(){
+    //Move sprite by VectorIn
   }
-
+  collision(entity){
+    //Delete this Bullet
+  }
+  impulse(entity){
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
+  }
 }
 
 //Spread Class
-//Extension of Bullet
-class Spread extends Bullet{
-  constructor(x, y, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Spread extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Spread Created");
   }
 
   trajectory(){
-    console.log("This Spread is going everywhere!");
+    this.lifespan--;
+    console.log("This Spread is staying put!"); //I don't believe spread should ever move - it should 'appear' at once and then fade.
   }
 
-  collision(){
-    console.log("This Spread hit everything!");
+  render(){
+    //Just draw the correct frame based on lifespan - I'll have a 'puff of smoke' animation
+  }
+
+  //no collision for this projectile either - spread just exists, it doesn't 'get hit' by anything, it only hits in impulse().
+
+  impulse(entity){ //But it does damage things it touches!
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
   }
 }

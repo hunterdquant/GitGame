@@ -16,7 +16,7 @@ var stage = new Container(),
     gameScene = new Container(),
     gameOverScene = new Container(),
     startScene = new Container(),
-    renderer = autoDetectRenderer(800, 600);
+    renderer = autoDetectRenderer(1000, 800);
 
 document.body.appendChild(renderer.view);
 
