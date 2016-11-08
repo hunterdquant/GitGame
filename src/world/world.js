@@ -102,8 +102,10 @@ class World {
 
   init() {
     if (this.currentNode !== null) {
-      this.player = new Player(100, (this.currentNode.height/3)*100, unitFrames.player, 100);
+      this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
+      this.currentNode.enemies.push(new RAM(900, (this.currentNode.height/3)*100), 150, 200, unitFrames.ram,
+                                            unitFrames.ram, 100, 5, 100, 600, 100, 800);
       this.currentNode.init();
       this.currentNode.player.init();
     }

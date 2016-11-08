@@ -28,6 +28,24 @@ loader
   .add('assets/tilesanim5.png')
   .add('assets/tilesanim6.png')
   .add('assets/GitGamePlayerSpriteSheet.png')
+  .add('assets/RAMsheet.png')
+  .add('assets/ERG.png')
+  .add('assets/RNG_Explosion00.png')
+  .add('assets/RNG_Explosion01.png')
+  .add('assets/RNG_Explosion02.png')
+  .add('assets/RNG_Explosion03.png')
+  .add('assets/RNG_Explosion04.png')
+  .add('assets/RNG_Explosion05.png')
+  .add('assets/RNG_Explosion06.png')
+  .add('assets/RNG_Explosion07.png')
+  .add('assets/RNG_Explosion08.png')
+  .add('assets/RNG_Explosion09.png')
+  .add('assets/RNG_Explosion10.png')
+  .add('assets/RNG_Explosion11.png')
+  .add('assets/RNG_Explosion12.png')
+  .add('assets/RNG_Explosion13.png')
+  .add('assets/RNG_Explosion14.png')
+  .add('assets/RNG_Explosion15.png')
   .load(setup);
 
 tileFrames = {
@@ -46,7 +64,10 @@ tileFrames = {
 };
 
 unitFrames = {
-  player: []
+  player: [],
+  erg: [],
+  ram: [],
+  rng: []
 }
 
 // Manipulates loaded resources
@@ -82,6 +103,23 @@ function setup() {
   tileFrames.corner = tileFrames.corner.concat(tileFrames.corner.slice(1, tileFrames.corner.length - 1).reverse());
   tileFrames.warp = tileFrames.warp.concat(tileFrames.warp.slice(1, tileFrames.warp.length - 1).reverse());
 
+  let texture = TextureCache['assets/RAMsheet.png'];
+  unitFrames.ram.push(extractFrame(0, 0, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 1, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 2, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 3, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 4, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 5, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 6, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 7, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 8, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 9, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 10, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 11, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 12, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 13, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 14, 150, 200, texture));
+  unitFrames.ram.push(extractFrame(0, 15, 150, 200, texture));
   let playerTiles = 16
   let playerTexture = TextureCache['assets/GitGamePlayerSpriteSheet.png'];
   for (var frame = 0; frame < 16; frame++) {

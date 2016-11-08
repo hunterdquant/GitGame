@@ -324,7 +324,6 @@ class RNG extends Enemy{
   throwShadow(){
     var x = Math.floor((Math.random() * ((this.xmax - this.width) - this.xmin)) + this.xmin);
     var y = Math.floor((Math.random() * ((this.ymax - this.height) - this.ymin)) + this.ymin);
-    if()
     this.collidable = false;
     this.shadowAnimation = new Movie(this.shadowTexture);
     this.shadowAnimation.x = x;
@@ -333,9 +332,6 @@ class RNG extends Enemy{
     console.log("Shadow Created");
 
   }
-
-
-
 }
 
 
