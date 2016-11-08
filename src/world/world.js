@@ -257,7 +257,7 @@ class EnvNode {
   	var jump = 1;
 
   	for(var parent of this.parents){
-  		this.tileSet[0][Pindex] = new Door(0, 100*Pindex, 1, 1, 100, 100, tileFrames.door1, parent);
+  		this.tileSet[0][Pindex] = new Door(0, 100*Pindex, 1, 1, 100, 100, tileFrames.door2, parent);
   		if(direction){
   			Pindex = Pindex + jump;
   			direction = false;
