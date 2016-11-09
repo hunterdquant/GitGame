@@ -105,6 +105,7 @@ class World {
       this.currentNode.player = this.player;
       this.currentNode.init();
       this.player.init();
+      this.player.weapon.init();
     }
   }
 
@@ -120,6 +121,7 @@ class World {
     this.currentNode.init();
     this.currentNode.leaving = false;
     this.player.init();
+    this.player.weapon.init();
     this.currentNode.player = this.player;
   }
 }
@@ -372,7 +374,9 @@ class EnvNode {
       x = 0;
     }
     if (x !== 0 || y !== 0) {
-      this.player.attack({x:x,y:y});
+      let newProjectile = this.player.attack({x:x,y:y});
+      if(newProjectile !== undefined) 
+        this.projectiles.push(newProjectile);
       this.player.weapon.render({x:x, y:y});
     }
 
@@ -428,6 +432,8 @@ class EnvNode {
         }
       }
     }
+    // Remove all dead projectiles
+    this.projectiles = this.projectiles.filter(projectile => !projectile.dead);
   }
 
   init() {

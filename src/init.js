@@ -30,7 +30,9 @@ loader
   .add('assets/GitGamePlayerSpriteSheet.png')
   .add('assets/RecursionRifle.png')
   .add('assets/KeyValueDuals.png')
-  .add('assets/MaxHeapBlunerbuss.png')
+  .add('assets/MaxHeapBlunderbuss.png')
+  .add('assets/RecursionProjectile.png')
+  .add('assets/DualsProjectile.png')
   .load(setup);
 
 tileFrames = {
@@ -56,6 +58,11 @@ weaponTextures = {
   recursionRifle: null,
   keyValueDuals: null,
   maxHeapBlunderbuss: null
+};
+
+projectileTextures = {
+  recursion: [],
+  bullet: []
 };
 
 // Manipulates loaded resources
@@ -99,7 +106,13 @@ function setup() {
 
   weaponTextures.recursionRifle = TextureCache['assets/RecursionRifle.png'];
   weaponTextures.keyValueDuals = TextureCache['assets/KeyValueDuals.png'];
-  weaponTextures.maxHeapBlunderbuss = TextureCache['assets/MaxHeapBlunerbuss.png'];
+  weaponTextures.maxHeapBlunderbuss = TextureCache['assets/MaxHeapBlunderbuss.png'];
+
+  let recursionProjectileTexture = TextureCache['assets/RecursionProjectile.png'];
+  projectileTextures.recursion.push(extractFrame(0, 0, 1000, 48, recursionProjectileTexture));
+
+  let dualsProjectileTexture = TextureCache['assets/DualsProjectile.png'];
+  projectileTextures.bullet.push(extractFrame(0, 0, 9, 9, dualsProjectileTexture));
 
   // End sprite sheet loading
   stage.addChild(gameScene);
