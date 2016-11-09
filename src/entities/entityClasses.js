@@ -12,8 +12,6 @@ class Entity extends Collidable {
     this.animation.y = this.y;
     this.animation.rotation = 0;
     this.animation.animationSpeed = .25;
-
-    console.log("Entity Created");
   }
 
   //Will be defined for Each Entity

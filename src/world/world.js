@@ -368,28 +368,6 @@ class EnvNode {
     }
     this.player.movement(x, y);
     this.player.weapon.update(x,y);
-    // UP/DOWN
-    if (inputBundle[38]) {
-      y = 1
-    } else if (inputBundle[40]) {
-      y = -1;
-    } else {
-      y = 0;
-    }
-    // LEFT/RIGHT
-    if (inputBundle[37]) {
-      x = -1
-    } else if (inputBundle[39]) {
-      x = 1;
-    } else {
-      x = 0;
-    }
-    if (x !== 0 || y !== 0) {
-      let newProjectile = this.player.attack({x:x,y:y});
-      if(newProjectile !== undefined)
-        this.projectiles.push(newProjectile);
-      this.player.weapon.render({x:x, y:y});
-    }
 
     var colVec = null;
     var colFound = false;
@@ -414,20 +392,42 @@ class EnvNode {
         break;
       }
     }
-
     if (colVec.x != 0) {
       this.player.movement(-x, 0);
+      this.player.weapon.update(-x,0);
     }
     if (colVec.y != 0) {
       this.player.movement(0, -y);
+      this.player.weapon.update(0,-y);
     }
-
     if (this.player.invincible) {
       this.player.curIFrames++;
       if (this.player.curIFrames > this.player.iFrames) {
           this.player.invincible = false;
           this.player.curIFrames = 0;
       }
+    }
+    // UP/DOWN
+    if (inputBundle[38]) {
+      y = 1
+    } else if (inputBundle[40]) {
+      y = -1;
+    } else {
+      y = 0;
+    }
+    // LEFT/RIGHT
+    if (inputBundle[37]) {
+      x = -1
+    } else if (inputBundle[39]) {
+      x = 1;
+    } else {
+      x = 0;
+    }
+    if (x !== 0 || y !== 0) {
+      let newProjectile = this.player.attack({x:x,y:y});
+      if(newProjectile !== undefined)
+        this.projectiles.push(newProjectile);
+      this.player.weapon.render({x:x, y:y});
     }
   }
 

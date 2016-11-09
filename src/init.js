@@ -92,7 +92,7 @@ projectileTextures = {
 // Manipulates loaded resources
 function setup() {
   // Sprite sheet loading
-  let numTileFrames = 6;
+  let numTileFrames = 1;
   for (var frame = 1; frame <= numTileFrames; frame++) {
     let texture = TextureCache['assets/tilesanim' + frame + '.png'];
     tileFrames.wall1.push(extractFrame(0, 0, 100, 100, texture));
@@ -109,18 +109,18 @@ function setup() {
     tileFrames.warp.push(extractFrame(3, 2, 100, 100, texture));
   }
   // Reverses the a portion of the frames and concatenates to have animation pulse.
-  tileFrames.wall1 = tileFrames.wall1.concat(tileFrames.wall1.slice(1, tileFrames.wall1.length - 1).reverse());
-  tileFrames.wall2 = tileFrames.wall2.concat(tileFrames.wall2.slice(1, tileFrames.wall2.length - 1).reverse());
-  tileFrames.floor1 = tileFrames.floor1.concat(tileFrames.floor1.slice(1, tileFrames.floor1length - 1).reverse());
-  tileFrames.floor2 = tileFrames.floor2.concat(tileFrames.floor2.slice(1, tileFrames.floor2length - 1).reverse());
-  tileFrames.floor3 = tileFrames.floor3.concat(tileFrames.floor3.slice(1, tileFrames.floor3length - 1).reverse());
-  tileFrames.floor4 = tileFrames.floor4.concat(tileFrames.floor4.slice(1, tileFrames.floor4length - 1).reverse());
-  tileFrames.floor5 = tileFrames.floor5.concat(tileFrames.floor5.slice(1, tileFrames.floor5length - 1).reverse());
-  tileFrames.floor6 = tileFrames.floor6.concat(tileFrames.floor6.slice(1, tileFrames.floor6length - 1).reverse());
-  tileFrames.door1 = tileFrames.door1.concat(tileFrames.door1.slice(1, tileFrames.door1.length - 1).reverse());
-  tileFrames.door2 = tileFrames.door2.concat(tileFrames.door2.slice(1, tileFrames.door2.length - 1).reverse());
-  tileFrames.corner = tileFrames.corner.concat(tileFrames.corner.slice(1, tileFrames.corner.length - 1).reverse());
-  tileFrames.warp = tileFrames.warp.concat(tileFrames.warp.slice(1, tileFrames.warp.length - 1).reverse());
+  // tileFrames.wall1 = tileFrames.wall1.concat(tileFrames.wall1.slice(1, tileFrames.wall1.length - 1).reverse());
+  // tileFrames.wall2 = tileFrames.wall2.concat(tileFrames.wall2.slice(1, tileFrames.wall2.length - 1).reverse());
+  // tileFrames.floor1 = tileFrames.floor1.concat(tileFrames.floor1.slice(1, tileFrames.floor1length - 1).reverse());
+  // tileFrames.floor2 = tileFrames.floor2.concat(tileFrames.floor2.slice(1, tileFrames.floor2length - 1).reverse());
+  // tileFrames.floor3 = tileFrames.floor3.concat(tileFrames.floor3.slice(1, tileFrames.floor3length - 1).reverse());
+  // tileFrames.floor4 = tileFrames.floor4.concat(tileFrames.floor4.slice(1, tileFrames.floor4length - 1).reverse());
+  // tileFrames.floor5 = tileFrames.floor5.concat(tileFrames.floor5.slice(1, tileFrames.floor5length - 1).reverse());
+  // tileFrames.floor6 = tileFrames.floor6.concat(tileFrames.floor6.slice(1, tileFrames.floor6length - 1).reverse());
+  // tileFrames.door1 = tileFrames.door1.concat(tileFrames.door1.slice(1, tileFrames.door1.length - 1).reverse());
+  // tileFrames.door2 = tileFrames.door2.concat(tileFrames.door2.slice(1, tileFrames.door2.length - 1).reverse());
+  // tileFrames.corner = tileFrames.corner.concat(tileFrames.corner.slice(1, tileFrames.corner.length - 1).reverse());
+  // tileFrames.warp = tileFrames.warp.concat(tileFrames.warp.slice(1, tileFrames.warp.length - 1).reverse());
 
   let texture = TextureCache['assets/RAMsheet.png'];
   unitFrames.ram.push(extractFrame(0, 0, 150, 200, texture));
