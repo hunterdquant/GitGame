@@ -125,6 +125,7 @@ class Enemy extends Unit{
     this.xmax = xmax;
     this.ymin = ymin;
     this.ymax = ymax;
+    this.dead = false;
     this.damage = 5;
     this.animation.anchor.x = 0.5;
     console.log("Enemy Created");
@@ -496,7 +497,7 @@ class Bullets extends Projectile{
   }
   impulse(entity){
     if(entity instanceof Enemy){
-      //Call the damage function
+      entity.health -= this.damage;
     }
   }
 }

@@ -41,7 +41,6 @@ class Weapon {
     this.x = this.playerX + rotatePos.x;
     this.y = this.playerY + -rotatePos.y;
     this.rotation = rotatePos.rot;
-    console.log(this.x, this.y);
     this.update(0,0);
   }
 
@@ -51,12 +50,12 @@ class Weapon {
   }
 
   rotateLookup(x, y) {
-    
+
   }
 
   canShoot() {
     return this.cooldown === 0;
-  } 
+  }
 
   init() {
     gameScene.addChild(this.sprite);

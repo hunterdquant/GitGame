@@ -104,7 +104,7 @@ class World {
       this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
       this.currentNode.enemies.push(new RAM(900, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
-                                            unitFrames.ram, 100, 1, 100, 1000, 100, 700));
+                                            unitFrames.ram, 300, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
@@ -450,11 +450,18 @@ class EnvNode {
         var collided = getSATCollision(projectile, enemy);
         if (collided) {
           projectile.impulse(enemy);
+          projectile.dead = true;
+          projectile.detach();
+          if (enemy.health <= 0) {
+            enemy.detach();
+            enemy.dead = true;
+          }
         }
       }
     }
     // Remove all dead projectiles
     this.projectiles = this.projectiles.filter(projectile => !projectile.dead);
+    this.enemies = this.enemies.filter(enemy => !enemy.dead);
   }
 
   init() {
