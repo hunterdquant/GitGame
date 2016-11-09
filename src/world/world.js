@@ -116,6 +116,7 @@ class World {
       this.currentNode.enemies[2].init();
       this.currentNode.enemies[3].init();
       this.currentNode.enemies[4].init();
+      this.player.weapon.init();
     }
   }
 
@@ -131,6 +132,7 @@ class World {
     this.currentNode.init();
     this.currentNode.leaving = false;
     this.player.init();
+    this.player.weapon.init();
     this.currentNode.player = this.player;
   }
 }
@@ -365,6 +367,29 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+    this.player.weapon.update(x,y);
+    // UP/DOWN
+    if (inputBundle[38]) {
+      y = 1
+    } else if (inputBundle[40]) {
+      y = -1;
+    } else {
+      y = 0;
+    }
+    // LEFT/RIGHT
+    if (inputBundle[37]) {
+      x = -1
+    } else if (inputBundle[39]) {
+      x = 1;
+    } else {
+      x = 0;
+    }
+    if (x !== 0 || y !== 0) {
+      let newProjectile = this.player.attack({x:x,y:y});
+      if(newProjectile !== undefined)
+        this.projectiles.push(newProjectile);
+      this.player.weapon.render({x:x, y:y});
+    }
 
     var colVec = null;
     var colFound = false;
@@ -428,6 +453,8 @@ class EnvNode {
         }
       }
     }
+    // Remove all dead projectiles
+    this.projectiles = this.projectiles.filter(projectile => !projectile.dead);
   }
 
   init() {

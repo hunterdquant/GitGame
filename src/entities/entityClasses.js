@@ -86,7 +86,7 @@ class Unit extends Entity{
 class Player extends Unit{
   constructor(x, y, width, height, frames, health, weapon, subWeapon){
     super(x, y, width, height, frames, health);
-    this.weapon = weapon;
+    this.weapon = new KeyValueDuals(x, y+25, weaponTextures.recursionRifle, this.x, this.y);
     this.subWeapon = subWeapon;
     this.moveStep = 4;
     this.invincible = false;
@@ -102,11 +102,11 @@ class Player extends Unit{
     this.y = this.y + y;
     this.animation.x = this.x;
     this.animation.y = this.y;
+    this.weapon.sendPos(this.x, this.y);
   }
 
-  attack() {
-  //To Be Implemented
-  console.log("You attacked!");
+  attack(vector) {
+    return this.weapon.fire(vector);
   }
 
   collision(entity) {
@@ -426,29 +426,29 @@ class MaxHeapBlunderbussPickup extends Item{
 //Base of All Bullets, not directly used
 //Extension of Entity
 class Projectile extends Entity{ //Base class is pretty simple
-  constructor(x, y, texture, damage, VectorIn){
-    super(x, y, texture);
+  constructor(x, y, width, height, texture, damage, VectorIn){
+    super(x, y, width, height, texture);
     this.damage = damage;
     this.direction = new Vector(VectorIn.x, VectorIn.y);
-    console.log("Projectile Created");
+    this.init();
   }
 
   //Will Be Defined for Each Type of Projectile
-trajectory(){
-    console.log("This Projectile is going places!");
+  trajectory(){
+    // console.log("This Projectile is going places!");
   }
 }
 
 //Beam Class
 //Extension of Projectile
 class Beam extends Projectile{
-  constructor(x, y, texture, damage, VectorIn){
-    super(x, y, texture, damage, VectorIn);
+  constructor(x, y, width, height, texture, damage, VectorIn){
+    super(x, y, width, height, texture, damage, VectorIn);
     console.log("Beam Created");
   }
   trajectory(){
     this.x = Player.x; //Name of player? Reference wrong?
-    console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
+    // console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
   }
   render(){
 
@@ -468,15 +468,25 @@ class Beam extends Projectile{
 //Bullets Class
 //Extension of Projectile
 class Bullets extends Projectile{
-  constructor(x, y, texture, damage, VectorIn){
-    super(x, y, texture, damage, VectorIn);
+  constructor(x, y, width, height, texture, damage, VectorIn){
+    super(x, y, width, height, texture, damage, VectorIn);
     this.lifespan = 600; //lifespan variable is important for fading away
-    console.log("Bullets Created");
+    // console.log("Bullets Created");
   }
   trajectory(){
-    console.log("These Bullets are going places!");
-    this.x = this.x+VectorIn.x;
-    this.y = this.y+VectorIn.y;
+    // console.log("These Bullets are going places!");
+    this.x = this.x+this.direction.x*3;
+    this.y = this.y-this.direction.y*3;
+
+    this.animation.x = this.x;
+    this.animation.y = this.y;
+
+    this.lifespan -= 10;
+
+    if(this.lifespan < 0) {
+      this.detach();
+      this.dead = true;
+    }
   }
   render(){
     //Move sprite by VectorIn
@@ -494,8 +504,8 @@ class Bullets extends Projectile{
 //Spread Class
 //Extension of Projectile
 class Spread extends Projectile{
-  constructor(x, y, texture, damage, VectorIn){
-    super(x, y, texture, damage, VectorIn);
+  constructor(x, y, width, height, texture, damage, VectorIn){
+    super(x, y, width, height, texture, damage, VectorIn);
     console.log("Spread Created");
   }
 
@@ -514,64 +524,5 @@ class Spread extends Projectile{
     if(entity instanceof Enemy){
       //Call the damage function
     }
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////Weapons///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-//Weapon Class
-//Base of All Weapons, not directly used
-//Extension of Entity
-class Weapon extends Entity{
-  constructor(x, y, width, height, texture, shoots, ammo){
-    super(x, y, texture);
-    this.shoots = shoots;
-    this.ammo = ammo;
-    console.log("Weapon Created");
-  }
-}
-
-//Max Heap Blunderbuss Class
-//Extension of Weapon
-class MaxHeapBlunderbuss extends Weapon{
-  constructor(x, y, width, height, texture, ammo){
-    super(x, y, texture, "Spread", ammo);
-    console.log("Max Heap Blunderbuss Created");
-  }
-
-  render(){
-
-  }
-
-  collision(){
-    console.log("You just hit your Max Heap Blunderbuss on something...");
-  }
-}
-
-//Key Value Duals Class
-//Extension of Weapon
-class KeyValueDuals extends Weapon{
-  constructor(x, y, width, height, texture, ammo){
-    super(x, y, texture, "Bullets", ammo);
-    console.log("Key Value Duals Created");
-  }
-
-  collision(){
-    console.log("You just hit your Key Value Duals on something...");
-  }
-}
-
-//Recursion Rifle Class
-//Extension of Weapon
-class RecursionRifle extends Weapon{
-  constructor(x, y, width, height, texture, ammo){
-    super(x, y, texture, "Beam", ammo);
-    console.log("Recursion Rifle Created");
-  }
-
-  collision(){
-    console.log("You just hit your Recursion Rifle on something...");
   }
 }
