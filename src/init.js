@@ -16,7 +16,7 @@ var stage = new Container(),
     gameScene = new Container(),
     gameOverScene = new Container(),
     startScene = new Container(),
-    renderer = autoDetectRenderer(800, 600);
+    renderer = autoDetectRenderer(1000, 800);
 
 document.body.appendChild(renderer.view);
 
@@ -46,6 +46,7 @@ loader
   .add('assets/RNG_Explosion13.png')
   .add('assets/RNG_Explosion14.png')
   .add('assets/RNG_Explosion15.png')
+  .add('assets/RNG_Marker.png')
   .load(setup);
 
 tileFrames = {
@@ -67,7 +68,9 @@ unitFrames = {
   player: [],
   erg: [],
   ram: [],
-  rng: []
+  ramCharge: [],
+  rng: [],
+  rngMarker: []
 }
 
 // Manipulates loaded resources
@@ -120,6 +123,26 @@ function setup() {
   unitFrames.ram.push(extractFrame(0, 13, 150, 200, texture));
   unitFrames.ram.push(extractFrame(0, 14, 150, 200, texture));
   unitFrames.ram.push(extractFrame(0, 15, 150, 200, texture));
+
+  texture = TextureCache['assets/ERG.png'];
+  unitFrames.erg.push(extractFrame(0, 0, 50, 50, texture));
+  unitFrames.erg.push(extractFrame(1, 0, 50, 50, texture));
+  unitFrames.erg.push(extractFrame(2, 0, 50, 50, texture));
+  unitFrames.erg.push(extractFrame(3, 0, 50, 50, texture));
+
+  for (var i = 0; i < 16; i++) {
+    var num = null;
+    if (i < 10) {
+      num = '0' + i;
+    } else {
+      num = i;
+    }
+    texture = TextureCache['assets/RNG_Explosion' + num + '.png'];
+    unitFrames.rng.push(texture);
+  }
+  texture = TextureCache['assets/RNG_Marker.png'];
+  unitFrames.rngMarker.push(texture);
+
   let playerTiles = 16
   let playerTexture = TextureCache['assets/GitGamePlayerSpriteSheet.png'];
   for (var frame = 0; frame < 16; frame++) {

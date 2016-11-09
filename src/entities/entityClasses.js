@@ -1,7 +1,8 @@
 //Entity Class
 //Base of all Entities, not directly used
-class Entity /*extends Collidable*/ {
+class Entity extends Collidable {
   constructor(x, y, width, height, frames) {
+    super();
     this.x = x;
     this.y = y;
     this.width = width;
@@ -9,6 +10,7 @@ class Entity /*extends Collidable*/ {
     this.animation = new Movie(frames);
     this.animation.x = this.x;
     this.animation.y = this.y;
+    this.animation.rotation = 0;
     this.animation.animationSpeed = .25;
 
     console.log("Entity Created");
@@ -22,6 +24,7 @@ class Entity /*extends Collidable*/ {
   init() {
     this.animation.play();
     gameScene.addChild(this.animation);
+    this.animation.calculateVertices();
   }
 
   detach() {
@@ -83,10 +86,12 @@ class Unit extends Entity{
 class Player extends Unit{
   constructor(x, y, width, height, frames, health, weapon, subWeapon){
     super(x, y, width, height, frames, health);
-
     this.weapon = weapon;
     this.subWeapon = subWeapon;
     this.moveStep = 4;
+    this.invincible = false;
+    this.iFrames = 60;
+    this.curIFrames = 0;
     console.log("Player Created");
   }
 
@@ -104,11 +109,10 @@ class Player extends Unit{
   console.log("You attacked!");
   }
 
-  collision() {
-  //To Be Implemented
-  console.log("You ran into something....");
+  collision(entity) {
+    // Get the direction of collision
+    return getBoxCollision(this, entity);
   }
-
 }
 
 //Enemy Class
@@ -121,17 +125,23 @@ class Enemy extends Unit{
     this.xmax = xmax;
     this.ymin = ymin;
     this.ymax = ymax;
+    this.damage = 5;
+    this.animation.anchor.x = 0.5;
     console.log("Enemy Created");
   }
 
   movement() {
   //To Be Implemented
-  console.log("An enemy is trying to get you! :O");
   }
 
   collision() {
   //To Be Implemented
-  console.log("You really let an enemy walk into you...?");
+  }
+
+  impulse(entity) {
+    if (entity instanceof Player) {
+      entity.health -= this.damage;
+    }
   }
 }
 
@@ -147,11 +157,14 @@ class ERG extends Enemy{
   //Attempts to take shortest path to a given point, usually the player position
   //Takes in an x and y which are the position it is moving towards
   movement(x, y) {
-  console.log("An ERG is trying to get you! :O");
 
   var xsign = (x - this.x)?(x - this.x)<0?-1:1:0;
+  if (xsign > 0) {
+    this.animation.scale.x = -1;
+  } else {
+    this.animation.scale.x = 1;
+  }
   var ysign = (y - this.y)?(y - this.y)<0?-1:1:0;
-
   if(this.x + xsign*this.speed + this.width > this.xmax){
     this.x = this.xmax - this.width;
   }
@@ -179,7 +192,6 @@ class ERG extends Enemy{
 
   collision() {
   //To Be Implemented
-  console.log("You really let an ERG walk into you...?");
   }
 }
 
@@ -189,74 +201,69 @@ class RAM extends Enemy{
   constructor(x, y, width, height, movingTexture, chargingTexture, health, speed, xmin, xmax, ymin, ymax){
     super(x, y, width, height, movingTexture, health, speed, xmin, xmax, ymin, ymax);
     console.log("RAM Created");
-
     this.movingTexture = movingTexture;
     this.chargingTexture = chargingTexture;
     this.charging = false;
     this.chargeDirectionX = 0;
     this.chargeDirectionY = 0;
-
   }
 
   //Moves a RAM Unit
   //Attempts to charge ar a player in only an x or y direction
   //moves x or y, until within acceptable range to charge
   movement(x, y) {
-    console.log("A RAM is trying to get you! :O");
     var xdiff = x - this.x;
+    if (xdiff >= 0 && !this.charging) {
+      this.animation.scale.x = -1;
+    } else if (!this.charging){
+      this.animation.scale.x = 1;
+    }
     var ydiff = y - this.y;
     if(this.charging == true){
-      console.log("Charging");
       if(this.x + this.width + this.chargeDirectionX*5*this.speed >= this.xmax){
         this.x = this.xmax - this.width;
         this.charging = false;
-        this.animation.setTexture(this.movingTexture);
+        //this.animation.texture = this.movingTexture;
       }
       else if(this.x + this.chargeDirectionX*5*this.speed <= this.xmin){
         this.x = this.xmin;
         this.charging = false;
-        this.animation.setTexture(this.movingTexture);
+        //this.animation.texture = this.movingTexture;
       }
       else if(this.y + this.height + this.chargeDirectionY*5*this.speed >= this.ymax){
-        this.y = this.ymax - this.width;
+        this.y = this.ymax - this.height;
         this.charging = false;
-        this.animation.setTexture(this.movingTexture);
+        //this.animation.texture = this.movingTexture;
       }
       else if(this.y + this.chargeDirectionY*5*this.speed <= this.ymin){
         this.y = this.ymin;
         this.charging = false;
-        this.animation.setTexture(this.movingTexture);
+        //this.animation.texture = this.movingTexture;
       }
       else{
         this.x += this.chargeDirectionX*this.speed*5;
         this.y += this.chargeDirectionY*this.speed*5;
       }
-
-      this.animation.x = this.x;
-      this.animation.y = this.y;
     }
 
     else if(Math.abs(xdiff) < 5){
-      console.log("Starting to charge Y");
       this.chargeDirectionY = (ydiff)?(ydiff)<0?-1:1:0;
       this.chargeDirectionX = 0;
       this.charging = true;
-      this.animation.setTexture(this.chargingTexture);
+      //this.animation.texture = this.chargingTexture;
     }
 
     else if(Math.abs(ydiff) < 5){
-      console.log("Starting to charge X");
       this.chargeDirectionX = (xdiff)?(xdiff)<0?-1:1:0;
       this.chargeDirectionY = 0;
       this.charging = true;
-      this.animation.setTexture(this.chargingTexture);
+      //this.animation.texture = this.chargingTexture;
     }
 
     else{
       if(xdiff > ydiff){
-        console.log("Positioning y");
         var sign = (ydiff)?(ydiff)<0?-1:1:0;
-        if(this.y + sign*this.speed + this.height > this.ymax){
+        if(this.y  + sign*this.speed + this.height > this.ymax){
           this.y = this.height = this.ymax;
         }
         else if(this.y + sign*this.speed < this.ymin){
@@ -265,11 +272,9 @@ class RAM extends Enemy{
         else{
           this.y += sign*this.speed;
         }
-        this.animation.y = this.y;
       }
 
       else{
-        console.log("Positioning X");
         var sign = (xdiff)?(xdiff)<0?-1:1:0;
         if(this.x + sign*this.speed + this.width > this.xmax){
           this.x = this.width = this.xmax;
@@ -280,20 +285,21 @@ class RAM extends Enemy{
         else{
           this.x += sign*this.speed;
         }
-        this.animation.x = this.x;
       }
     }
+    this.animation.x = this.x;
+    this.animation.y = this.y;
   }
 
   collision() {
   //To Be Implemented
-  console.log("You really let a RAM hit you...?");
   }
 }
 
 class RNG extends Enemy{
   constructor(x, y, width, height, texture, shadowTexture, health, speed, xmin, xmax, ymin, ymax, endTime){
     super(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax);
+    console.log(shadowTexture);
     this.shadowTexture = shadowTexture;
     this.collidable = true;
     this.endTime = endTime;
@@ -312,8 +318,7 @@ class RNG extends Enemy{
         this.animation.x = this.x;
         this.animation.y = this.y;
         this.collidable = true;
-        delete this.shadowAnimation;
-
+        gameScene.removeChild(this.shadowAnimation);
         this.timer = 0;
       }
       else{
@@ -329,6 +334,7 @@ class RNG extends Enemy{
     this.shadowAnimation.x = x;
     this.shadowAnimation.y = y;
     this.shadowAnimation.animationSpeed = .25;
+    gameScene.addChild(this.shadowAnimation);
     console.log("Shadow Created");
 
   }
@@ -416,74 +422,99 @@ class MaxHeapBlunderbussPickup extends Item{
 ////////////////////////////////Bullets////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-//Bullet Class
+//Projectile Class
 //Base of All Bullets, not directly used
 //Extension of Entity
-class Bullet extends Entity{
-  constructor(x, y, width, height, texture, damage){
+class Projectile extends Entity{ //Base class is pretty simple
+  constructor(x, y, texture, damage, VectorIn){
     super(x, y, texture);
     this.damage = damage;
-    console.log("Bullet Created");
+    this.direction = new Vector(VectorIn.x, VectorIn.y);
+    console.log("Projectile Created");
   }
 
-  //Will Be Defined for Each Type of Bullet
+  //Will Be Defined for Each Type of Projectile
 trajectory(){
-    console.log("This Bullet is going places!");
+    console.log("This Projectile is going places!");
   }
 }
 
 //Beam Class
-//Extension of Bullet
-class Beam extends Bullet{
-  constructor(x, y, width, height, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Beam extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Beam Created");
   }
-
   trajectory(){
-    console.log("This Beam is going places!");
+    this.x = Player.x; //Name of player? Reference wrong?
+    console.log("This Beam is NOT going places, but instead projecting from player to edge of screen!");
   }
+  render(){
 
-  collision(){
+    //Stretch texture? For now surely we could just draw a long beam picture, optimization be damned.
+  }
+  collision(entity){
     console.log("This Beam hit something!");
+    //No further methods, a beam won't dissapear or anything just because it hit something - instead it will exist across it's 'lifespan'
   }
-
+  impulse(entity){
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
+  }
 }
 
 //Bullets Class
-//Extension of Bullet
-class Bullets extends Bullet{
-  constructor(x, y, width, height, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Bullets extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
+    this.lifespan = 600; //lifespan variable is important for fading away
     console.log("Bullets Created");
   }
-
   trajectory(){
     console.log("These Bullets are going places!");
+    this.x = this.x+VectorIn.x;
+    this.y = this.y+VectorIn.y;
   }
-
-  collision(){
-    console.log("These Bullets hit something!");
+  render(){
+    //Move sprite by VectorIn
   }
-
+  collision(entity){
+    //Delete this Bullet
+  }
+  impulse(entity){
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
+  }
 }
 
 //Spread Class
-//Extension of Bullet
-class Spread extends Bullet{
-  constructor(x, y, width, height, texture, damage){
-    super(x, y, texture, damage);
+//Extension of Projectile
+class Spread extends Projectile{
+  constructor(x, y, texture, damage, VectorIn){
+    super(x, y, texture, damage, VectorIn);
     console.log("Spread Created");
   }
 
   trajectory(){
-    console.log("This Spread is going everywhere!");
+    this.lifespan--;
+    console.log("This Spread is staying put!"); //I don't believe spread should ever move - it should 'appear' at once and then fade.
   }
 
-  collision(){
-    console.log("This Spread hit everything!");
+  render(){
+    //Just draw the correct frame based on lifespan - I'll have a 'puff of smoke' animation
   }
 
+  //no collision for this projectile either - spread just exists, it doesn't 'get hit' by anything, it only hits in impulse().
+
+  impulse(entity){ //But it does damage things it touches!
+    if(entity instanceof Enemy){
+      //Call the damage function
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -508,6 +539,10 @@ class MaxHeapBlunderbuss extends Weapon{
   constructor(x, y, width, height, texture, ammo){
     super(x, y, texture, "Spread", ammo);
     console.log("Max Heap Blunderbuss Created");
+  }
+
+  render(){
+
   }
 
   collision(){
