@@ -337,6 +337,15 @@ class RNG extends Enemy{
     console.log("Shadow Created");
 
   }
+
+  detach(){
+    if(this.collidable == false){
+      this.shadowAnimation.stop();
+      gameScene.removeChild(this.shadowAnimation);
+    }
+    this.animation.stop();
+    gameScene.removeChild(this.animation);
+  }
 }
 
 
