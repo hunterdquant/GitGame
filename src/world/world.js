@@ -69,6 +69,14 @@ class World {
       }
     }
 
+    //find the head node. This should be the node with no outgoing nodes.
+    let head = null;
+    for (var node in this.nodes){
+	if(this.nodes[node].parents.length === this.nodes[node].neighbors.length){
+	   head = this.nodes[node]; 
+	}
+    }
+
     // Run BFS to get depth from init to any other node. This will give us depth, which we'll
     // use later to scale difficulty.
     this.envGraph.bfs(init);
@@ -298,7 +306,11 @@ class EnvNode {
 		//The floor is produced
     for (var i = 1; i < this.width - 1; i++) {
       for (var j = 1; j < this.height - 1; j++) {
-        this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
+	if(this == head && i == math.floor(this.width/2) && this.j == math.floor(this.height/2)){
+	    this.tileSet[i][j] = new Warp(100*i, 100*j, 1, 1, 100, 100, tileFrames['warp']);
+	}else{
+            this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
+	}
       }
     }
 
