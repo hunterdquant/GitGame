@@ -26,25 +26,89 @@ inputBundle = {
   37: false,
   38: false,
   39: false,
-  40: false
+  40: false,
+  // Start, Pause, Resume, Restart - Space
+  32: false
 }
 
 gameStates = {
   play: function() {
-          gameWorld.update(inputBundle);
-          if (gameWorld.currentNode.leaving) {
-            gameWorld.changeNode();
+          if(inputBundle[32]){
+            gameState = gameStates.pause;
+            inputBundle[32] = false;
+            gameWorld.stopAnimation();
+          }
+          else{
+            gameWorld.update(inputBundle);
+            if (gameWorld.currentNode.leaving) {
+              gameWorld.changeNode();
+            }
           }
         },
-  win: function() {},
-  lose: function() {},
+  win: function() {
+        var maintext = new PIXI.Text("You Won!", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+        var subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        gameScene.addChild(maintext);
+        gameScene.addChild(subtext);
+        if(inputBundle[32]) {
+          gameState = gameStates.start;
+          inputBundle[32] = false;
+          gameWorld.startAnimation();
+          gameScene.removeChild(maintext);
+          gameScene.removeChild(subtext);
+          }
+        },
+
+  lose: function() {
+        var maintext = new PIXI.Text("You Lost...", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+        var subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        gameScene.addChild(maintext);
+        gameScene.addChild(subtext);
+        if(inputBundle[32]) {
+          gameState = gameStates.start;
+          inputBundle[32] = false;
+          gameWorld.startAnimation();
+          gameScene.removeChild(maintext);
+          gameScene.removeChild(subtext);
+        }
+      },
+
+  pause: function() {
+        var maintext = new PIXI.Text("The Game is Currently Paused", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+        var subtext = new PIXI.Text("Press Space to Resume", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        gameScene.addChild(maintext);
+        gameScene.addChild(subtext);
+        if(inputBundle[32]) {
+          gameState = gameStates.play;
+          inputBundle[32] = false;
+          gameWorld.startAnimation();
+          gameScene.removeChild(maintext);
+          gameScene.removeChild(subtext);
+          }
+        },
+
   start: function() {
            if (readyToPlay) {
              gameWorld.generateWorld('{"repo_name": "acm-website-revamp","commits_num": 19,"head_commit": "644a40687d8741014277ce021cfd415a0ee0f681","commits": {"644a40687d8741014277ce021cfd415a0ee0f681": {"parents": ["99979eebcedc15c100db17cfae521c17cb428b86"],"message": "Adding footer links","author": "Benjamin Lannon <lannonbr@clarkson.edu>","insertions": 7,"deletions": 7},"99979eebcedc15c100db17cfae521c17cb428b86": {"parents": [],"message": "Adding footer links","author": "Benjamin Lannon <lannonbr@clarkson.edu>","insertions": 7,"deletions": 7}}}');
-             gameState = gameStates.play;
+             gameState = gameStates.startScreen;
              gameWorld.init();
+             gameWorld.stopAnimation();
            }
-         }
+  },
+
+  startScreen: function() {
+        var maintext = new PIXI.Text("The Game is Ready to Start", {fontFamily : "Arial", fontSize : 24});
+        var subtext = new PIXI.Text("Press Space to Start", {fontFamily : "Arial", fontSize : 18});
+        gameScene.addChild(maintext);
+        gameScene.addChild(subtext);
+        if(inputBundle[32]) {
+          gameState = gameStates.play;
+          inputBundle[32] = false;
+          gameWorld.startAnimation();
+          gameScene.removeChild(maintext);
+          gameScene.removeChild(subtext);
+        }
+      }
 };
 
 function extractFrame(x, y, width, height, texture) {
@@ -66,6 +130,10 @@ function keyUp(event) {
   if (key === 38 || key === 39 || key === 40 || key === 37 ||
       key === 87 || key === 83 || key === 65 || key === 68)
       inputBundle[key] = false;
+  if(key === 32){
+    inputBundle[key] = inputBundle[key] ^ true;
+  }
+
 }
 
 gameState = gameStates.start;
