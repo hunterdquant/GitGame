@@ -109,6 +109,9 @@ class World {
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+
+      this.currentNode.enemies.push(new RNG(100, 100, 50, 50, unitFrames.rng, unitFrames.rngMarker, 100, 1, 100, 1000, 100, 700, 60));
+
       this.currentNode.init();
       this.player.init();
       this.currentNode.enemies[0].init();
@@ -116,6 +119,9 @@ class World {
       this.currentNode.enemies[2].init();
       this.currentNode.enemies[3].init();
       this.currentNode.enemies[4].init();
+
+      this.currentNode.enemies[5].init();
+
       this.player.weapon.init();
     }
   }
@@ -125,7 +131,7 @@ class World {
   }
 
   changeNode() {
-    this.currentNode.detach();7
+    this.currentNode.detach();
     this.currentNode = this.nodes[this.currentNode.doorTile.nodeHash];
     this.player.x = 100;
     this.player.y = (this.currentNode.height/2)*100;
@@ -134,6 +140,26 @@ class World {
     this.player.init();
     this.player.weapon.init();
     this.currentNode.player = this.player;
+  }
+
+  stopAnimation(){
+    this.player.animation.stop();
+    this.currentNode.enemies[0].animation.stop();
+    this.currentNode.enemies[1].animation.stop();
+    this.currentNode.enemies[2].animation.stop();
+    this.currentNode.enemies[3].animation.stop();
+    this.currentNode.enemies[4].animation.stop();
+    this.currentNode.enemies[5].animation.stop();
+  }
+
+  startAnimation(){
+    this.player.animation.play();
+    this.currentNode.enemies[0].animation.play();
+    this.currentNode.enemies[1].animation.play();
+    this.currentNode.enemies[2].animation.play();
+    this.currentNode.enemies[3].animation.play();
+    this.currentNode.enemies[4].animation.play();
+    this.currentNode.enemies[5].animation.play();
   }
 }
 
