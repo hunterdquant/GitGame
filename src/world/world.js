@@ -14,6 +14,9 @@ class World {
     // Clear on new generation.
     if (this.envGraph !== null) {
       this.envGraph.clear();
+      this.nodes = {};
+      this.currentNode = null;
+      this.player = null;
     }
     let parsedMeta = JSON.parse(metadata);
     // Iterate over commit strings to build nodes.
@@ -372,7 +375,6 @@ class EnvNode {
     This function will update player state and render the player entity.
   */
   updatePlayer(inputBundle) {
-
     let x = 0;
     let y = 0;
     // Check inputs and move if no collision
@@ -454,6 +456,9 @@ class EnvNode {
       if(newProjectile !== undefined)
         this.projectiles.push(newProjectile);
       this.player.weapon.render({x:x, y:y});
+    }
+    if (this.player.health <= 0) {
+      this.player.die();
     }
   }
 

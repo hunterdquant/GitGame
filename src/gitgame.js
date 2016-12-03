@@ -31,6 +31,8 @@ inputBundle = {
   32: false
 }
 
+var maintext = null;
+var subtext = null;
 gameStates = {
   play: function() {
           if(inputBundle[32]){
@@ -46,8 +48,10 @@ gameStates = {
           }
         },
   win: function() {
-        var maintext = new PIXI.Text("You Won!", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-        var subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        if (maintext === null && subtext === null) {
+          maintext = new PIXI.Text("You Won!", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
         if(inputBundle[32]) {
@@ -56,12 +60,17 @@ gameStates = {
           gameWorld.startAnimation();
           gameScene.removeChild(maintext);
           gameScene.removeChild(subtext);
+          maintext = null;
+          subtext = null;
           }
         },
 
   lose: function() {
-        var maintext = new PIXI.Text("You Lost...", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-        var subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        if (maintext === null && subtext === null) {
+          gameWorld.stopAnimation();
+          maintext = new PIXI.Text("You Lost...", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
         if(inputBundle[32]) {
@@ -70,12 +79,16 @@ gameStates = {
           gameWorld.startAnimation();
           gameScene.removeChild(maintext);
           gameScene.removeChild(subtext);
+          maintext = null;
+          subtext = null;
         }
       },
 
   pause: function() {
-        var maintext = new PIXI.Text("The Game is Currently Paused", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-        var subtext = new PIXI.Text("Press Space to Resume", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        if (maintext === null && subtext === null) {
+          maintext = new PIXI.Text("The Game is Currently Paused", {fontFamily : "Arial", fontSize : 24, align : 'center'});
+          subtext = new PIXI.Text("Press Space to Resume", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+        }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
         if(inputBundle[32]) {
@@ -84,6 +97,8 @@ gameStates = {
           gameWorld.startAnimation();
           gameScene.removeChild(maintext);
           gameScene.removeChild(subtext);
+          maintext = null;
+          subtext = null;
           }
         },
 
@@ -97,8 +112,10 @@ gameStates = {
   },
 
   startScreen: function() {
-        var maintext = new PIXI.Text("The Game is Ready to Start", {fontFamily : "Arial", fontSize : 24});
-        var subtext = new PIXI.Text("Press Space to Start", {fontFamily : "Arial", fontSize : 18});
+        if (maintext === null && subtext === null) {
+          maintext = new PIXI.Text("The Game is Ready to Start", {fontFamily : "Arial", fontSize : 24});
+          subtext = new PIXI.Text("Press Space to Start", {fontFamily : "Arial", fontSize : 18});
+        }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
         if(inputBundle[32]) {
@@ -107,6 +124,8 @@ gameStates = {
           gameWorld.startAnimation();
           gameScene.removeChild(maintext);
           gameScene.removeChild(subtext);
+          maintext = null;
+          subtext = null;
         }
       }
 };

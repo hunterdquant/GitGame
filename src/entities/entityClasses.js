@@ -111,6 +111,10 @@ class Player extends Unit{
     // Get the direction of collision
     return getBoxCollision(this, entity);
   }
+
+  die() {
+    gameState = gameStates.lose;
+  }
 }
 
 //Enemy Class
