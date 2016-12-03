@@ -49,11 +49,13 @@ gameStates = {
         },
   win: function() {
         if (maintext === null && subtext === null) {
-          maintext = new PIXI.Text("You Won!", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+          maintext = new PIXI.Text("You Won!!", {fontFamily : "Terminal", fontSize : 50});
+          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Terminal", fontSize : 30});
         }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
+        maintext.setTransform(200, 250);
+        subtext.setTransform(400, 300);
         if(inputBundle[32]) {
           gameState = gameStates.start;
           inputBundle[32] = false;
@@ -68,11 +70,13 @@ gameStates = {
   lose: function() {
         if (maintext === null && subtext === null) {
           gameWorld.stopAnimation();
-          maintext = new PIXI.Text("You Lost...", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+          maintext = new PIXI.Text("You lost....", {fontFamily : "Terminal", fontSize : 50});
+          subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Terminal", fontSize : 30});
         }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
+        maintext.setTransform(425, 250);
+        subtext.setTransform(400, 300);
         if(inputBundle[32]) {
           gameState = gameStates.start;
           inputBundle[32] = false;
@@ -86,11 +90,13 @@ gameStates = {
 
   pause: function() {
         if (maintext === null && subtext === null) {
-          maintext = new PIXI.Text("The Game is Currently Paused", {fontFamily : "Arial", fontSize : 24, align : 'center'});
-          subtext = new PIXI.Text("Press Space to Resume", {fontFamily : "Arial", fontSize : 18, x : 500, y: 50});
+          maintext = new PIXI.Text("The Game is Currently Paused", {fontFamily : "Terminal", fontSize : 50});
+          subtext = new PIXI.Text("Press Space to Resume", {fontFamily : "Terminal", fontSize : 30});
         }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
+        maintext.setTransform(200, 250);
+        subtext.setTransform(400, 300);
         if(inputBundle[32]) {
           gameState = gameStates.play;
           inputBundle[32] = false;
@@ -113,11 +119,13 @@ gameStates = {
 
   startScreen: function() {
         if (maintext === null && subtext === null) {
-          maintext = new PIXI.Text("The Game is Ready to Start", {fontFamily : "Arial", fontSize : 24});
-          subtext = new PIXI.Text("Press Space to Start", {fontFamily : "Arial", fontSize : 18});
+          maintext = new PIXI.Text("The Game is Ready to Start", {fontFamily : "Terminal", fontSize : 50});
+          subtext = new PIXI.Text("Press Space to Start", {fontFamily : "Terminal", fontSize : 30});
         }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
+        maintext.setTransform(250, 250);
+        subtext.setTransform(400, 300);
         if(inputBundle[32]) {
           gameState = gameStates.play;
           inputBundle[32] = false;

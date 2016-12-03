@@ -147,22 +147,16 @@ class World {
 
   stopAnimation(){
     this.player.animation.stop();
-    this.currentNode.enemies[0].animation.stop();
-    this.currentNode.enemies[1].animation.stop();
-    this.currentNode.enemies[2].animation.stop();
-    this.currentNode.enemies[3].animation.stop();
-    this.currentNode.enemies[4].animation.stop();
-    this.currentNode.enemies[5].animation.stop();
+    for (var i = 0; i < this.currentNode.enemies.length; i++) {
+      this.currentNode.enemies[i].animation.stop();
+    }
   }
 
   startAnimation(){
     this.player.animation.play();
-    this.currentNode.enemies[0].animation.play();
-    this.currentNode.enemies[1].animation.play();
-    this.currentNode.enemies[2].animation.play();
-    this.currentNode.enemies[3].animation.play();
-    this.currentNode.enemies[4].animation.play();
-    this.currentNode.enemies[5].animation.play();
+    for (var i = 0; i < this.currentNode.enemies.length; i++) {
+      this.currentNode.enemies[i].animation.play();
+    }
   }
 }
 
