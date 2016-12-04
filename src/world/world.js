@@ -55,11 +55,14 @@ class World {
       // Add the new node to nodes.
       this.nodes[parsedMeta.commits[commit].sha] = node;
     }
-
     for (var branch in parsedMeta.branches) {
       for (var node in this.nodes) {
         if (node === parsedMeta.branches[branch].commit.sha) {
           this.nodes[node].branch = parsedMeta.branches[branch].name;
+          this.nodes[node].endofbranch = true;
+          if (this.nodes[node.branch] === "master") {
+            this.nodes[node].head = true;
+          }
         }
       }
     }
@@ -75,7 +78,7 @@ class World {
         init = this.nodes[node];
       }
     }
-
+    
     // Run BFS to get depth from init to any other node. This will give us depth, which we'll
     // use later to scale difficulty.
     this.envGraph.bfs(init);
@@ -257,6 +260,7 @@ class EnvNode {
       this.hash = '';
       this.branch = '';
       this.endofbranch = false;
+      this.head = false;
       // Default room dimensions
       this.width = 10;
       this.height = 8;
