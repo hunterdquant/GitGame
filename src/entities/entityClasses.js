@@ -144,8 +144,8 @@ class Player extends Unit{
 }
 
 class Pickup extends Unit{
-	constructor(x, y, width, height, texture, health){
-    super(x, y, width, height, texture, texture, health);
+	constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture, 1);
     this.dead = false;
     this.damage = 0;
     this.animation.anchor.x = 0.5;
