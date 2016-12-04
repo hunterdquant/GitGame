@@ -54,7 +54,7 @@ gameStates = {
         }
         gameScene.addChild(maintext);
         gameScene.addChild(subtext);
-        maintext.setTransform(200, 250);
+        maintext.setTransform(425, 250);
         subtext.setTransform(400, 300);
         if(inputBundle[32]) {
           gameState = gameStates.start;

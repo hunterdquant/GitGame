@@ -115,7 +115,7 @@ class World {
     if (this.currentNode !== null) {
       this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
-      this.currentNode.enemies.push(new RAM(900, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
+      this.currentNode.enemies.push(new RAM(800, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
                                             unitFrames.ram, 300, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
@@ -150,8 +150,28 @@ class World {
     this.currentNode.init();
     this.currentNode.leaving = false;
     this.player.init();
+    this.player.weapon.detach();
+    this.player.weapon = new KeyValueDuals(this.player.x, this.player.y+25, weaponTextures.recursionRifle, this.player.x, this.player.y);
     this.player.weapon.init();
     this.currentNode.player = this.player;
+    for (var i = 0; i < this.currentNode.enemies.length; i++) {
+      this.currentNode.enemies[i].detach();
+    }
+    this.currentNode.enemies = [];
+
+    this.currentNode.enemies.push(new RAM(800, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
+                                          unitFrames.ram, 300, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new RNG(100, 100, 50, 50, unitFrames.rng, unitFrames.rngMarker, 100, 1, 100, 1000, 100, 700, 60));
+    this.currentNode.enemies[0].init();
+    this.currentNode.enemies[1].init();
+    this.currentNode.enemies[2].init();
+    this.currentNode.enemies[3].init();
+    this.currentNode.enemies[4].init();
+    this.currentNode.enemies[5].init();
   }
 
   stopAnimation(){
@@ -409,6 +429,7 @@ class EnvNode {
 
     var colVec = null;
     var colFound = false;
+    var win = false;
     for (var tileLine of this.tileSet) {
       for (var tile of tileLine) {
         if (tile instanceof Wall) {
@@ -422,6 +443,12 @@ class EnvNode {
           if (colVec.x != 0 || colVec.y != 0) {
             this.leaving = true;
             this.doorTile = tile;
+            break;
+          }
+        } else if (tile instanceof Warp) {
+          colVec = this.player.collision(tile);
+          if (colVec.x != 0 || colVec.y != 0) {
+            win = true;
             break;
           }
         }
@@ -469,6 +496,9 @@ class EnvNode {
     }
     if (this.player.health <= 0) {
       this.player.die();
+    }
+    if (win) {
+      gameState = gameStates.win;
     }
   }
 
