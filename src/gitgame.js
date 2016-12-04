@@ -110,7 +110,7 @@ gameStates = {
 
   start: function() {
            if (readyToPlay) {
-             gameWorld.generateWorld('{"repo_name": "acm-website-revamp","commits_num": 19,"head_commit": "644a40687d8741014277ce021cfd415a0ee0f681","commits": {"644a40687d8741014277ce021cfd415a0ee0f681": {"parents": ["99979eebcedc15c100db17cfae521c17cb428b86"],"message": "Adding footer links","author": "Benjamin Lannon <lannonbr@clarkson.edu>","insertions": 7,"deletions": 7},"99979eebcedc15c100db17cfae521c17cb428b86": {"parents": [],"message": "Adding footer links","author": "Benjamin Lannon <lannonbr@clarkson.edu>","insertions": 7,"deletions": 7}}}');
+             gameWorld.generateWorld(JSON.stringify(data));
              gameState = gameStates.startScreen;
              gameWorld.init();
              gameWorld.stopAnimation();
