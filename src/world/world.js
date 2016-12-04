@@ -8,6 +8,7 @@ class World {
     this.nodes = {};
     this.currentNode = null;
     this.player = null;
+	this.enemySlowdownCount;
   }
 
   generateWorld(metadata) {
@@ -102,6 +103,11 @@ class World {
     }
   }
 
+  enemySlowDown(){
+	 enemySlowdownCount++;
+	 envNode.slowDownEnemies();
+  }
+  
   init() {
     if (this.currentNode !== null) {
       this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
@@ -112,9 +118,16 @@ class World {
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
-
-      this.currentNode.enemies.push(new RNG(100, 100, 50, 50, unitFrames.rng, unitFrames.rngMarker, 100, 1, 100, 1000, 100, 700, 60));
-
+	this.currentNode.enemies.push(new RNG(100, 100, 50, 50, unitFrames.rng, unitFrames.rngMarker, 100, 1, 100, 1000, 100, 700, 60));
+	
+	//pickups, make one of each
+	this.currentNode.pickups.push(new HealthPickup(200, 100, 40, 40, pickupTextures.healthPickupTexture));
+	this.currentNode.pickups.push(new HitShield(400, 100, 40, 40, pickupTextures.hitShieldTexture ));
+	this.currentNode.pickups.push(new DoubleFireRate(600, 100, 40, 40, pickupTextures.doubleFireRateTexture));
+	this.currentNode.pickups.push(new HealthIncrease(800, 100, 40, 40, pickupTextures.healthIncreaseTexture));
+	this.currentNode.pickups.push(new EnemySlowdown(900, 100, 40, 40, pickupTextures.enemySlowdownTexture));
+	
+	
       this.currentNode.init();
       this.player.init();
       this.currentNode.enemies[0].init();
@@ -122,8 +135,13 @@ class World {
       this.currentNode.enemies[2].init();
       this.currentNode.enemies[3].init();
       this.currentNode.enemies[4].init();
-
-      this.currentNode.enemies[5].init();
+	this.currentNode.enemies[5].init();
+	
+	this.currentNode.pickups[0].init();
+      this.currentNode.pickups[1].init();
+      this.currentNode.pickups[2].init();
+      this.currentNode.pickups[3].init();
+      this.currentNode.pickups[4].init();
 
       this.player.weapon.init();
     }
@@ -247,7 +265,7 @@ class EnvironmentGraph {
 */
 class EnvNode {
 
-  constructor() {
+  constructor(countEnemySlowdowns) {
       this.hash = '';
       // Default room dimensions
       this.width = 10;
@@ -265,6 +283,8 @@ class EnvNode {
       this.doorTile = null;
       this.projectiles = [];
       this.enemies = [];
+	  this.pickups = [];
+	  this.countEnemySlowdowns=countEnemySlowdowns;
   }
 
   /*
@@ -460,10 +480,10 @@ class EnvNode {
     This function will render all non player entities and update their state.
   */
   updateEntities() {
-    for (var enemy of this.enemies) {
+    for (var enemy of this.enemies) {//handles damage by enemies
       enemy.movement(this.player.x, this.player.y);
       var collided = getSATCollision(this.player, enemy);
-      if (collided && !this.player.invincible) {
+      if (collided && (!this.player.invincible || !this.player.hasRemainingHitShield) ){
         enemy.impulse(this.player);
         this.player.invincible = true;
         console.log(this.player.health);
@@ -484,11 +504,21 @@ class EnvNode {
         }
       }
     }
+	for(var pickup of this.pickups){
+      var collided = getSATCollision(this.player, pickup);
+      if (collided){
+        pickup.impulse(this.player);
+      }
+	}
     // Remove all dead projectiles
     this.projectiles = this.projectiles.filter(projectile => !projectile.dead);
     this.enemies = this.enemies.filter(enemy => !enemy.dead);
   }
-
+	slowDownEnemies(){
+		for (var enemy of this.enemies) {
+			enemy.slowDown();
+		}
+	}
   init() {
     for (var col in this.tileSet) {
       for (var row in this.tileSet[col]) {
