@@ -445,6 +445,7 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+    this.player.updateUI();
     this.player.weapon.update(x,y);
 
     var colVec = null;
@@ -529,6 +530,7 @@ class EnvNode {
     for (var enemy of this.enemies) {//handles damage by enemies
       enemy.movement(this.player.x, this.player.y);
       enemy.slowDown(gameWorld.enemySlowdownCount);
+      enemy.healthUpdate();
       var collided = getSATCollision(this.player, enemy);
       if (collided && (!this.player.invincible || !this.player.hasRemainingHitShield) ){
         enemy.impulse(this.player);

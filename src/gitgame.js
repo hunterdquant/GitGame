@@ -1,5 +1,7 @@
 var gameWorld = new World();
 
+var metadata = "";
+
 function gameLoop() {
   requestAnimationFrame(gameLoop);
 
@@ -12,7 +14,18 @@ var readyToPlay = false;
 
 // This is temporary workaround for waiting on resource loading.
 function playListener() {
-  readyToPlay = true;
+  let form = document.getElementById('repoForm');
+  let data = form.elements[0].value;
+
+  let [username, repo_name] = data.split('/');
+
+  fetch(`http://localhost:3000/repo/${username}/${repo_name}`)
+    .then(res => {
+      res.json().then(data => {
+        metadata = data;
+        readyToPlay = true;
+      });
+    }); 
 }
 
 // Input mappings. To be filled
@@ -111,7 +124,7 @@ gameStates = {
 
   start: function() {
            if (readyToPlay) {
-             gameWorld.generateWorld(JSON.stringify(data));
+             gameWorld.generateWorld(JSON.stringify(metadata));
              gameState = gameStates.startScreen;
              gameWorld.init();
              gameWorld.stopAnimation();
