@@ -88,11 +88,42 @@ class Player extends Unit{
     this.subWeapon = subWeapon;
     this.moveStep = 4;
     this.invincible = false;
+    this.maxhealth = health;
     this.iFrames = 60;
     this.curIFrames = 0;
+    this.remainingHitShield = 0;//for firewall
+    this.countDoubleFireRate=0;//
     console.log("Player Created");
-  }
+	}
+	gotHealthPickup(){
+    if (this.health >= this.maxhealth - 25) {
+      this.health = this.maxhealth;
+    } else {
+		    this.health=this.health + 25;
+    }
+	}
+	gotHitShield(){
+		this.remainingHitShield = this.remainingHitShield + 3;
+	}
+	hasRemainingHitShield(){
+		if(this.remainingHitShield == 0){
+			return false;
+		}
+		else{
+			this.remainingHitShield --;
+			return true;
+		}
+	}
+	gotDoubleFireRate(){
+		this.weapon.doubleFireRate();
+	}
+	gotHealthIncrease(){
+	   this.maxhealth += 20;
+	}
 
+	gotEnemySlowdown(){
+		gameWorld.enemySlowDown();
+	}
   //Moves the Player
   //Takes in an x and y which represent change in x and y coordinates
   movement(x, y) {
@@ -117,6 +148,46 @@ class Player extends Unit{
   }
 }
 
+class Pickup extends Unit{
+	constructor(x, y, width, height, texture){
+    super(x, y, width, height, texture, 1);
+    this.dead = false;
+    this.damage = 0;
+    this.animation.anchor.x = 0.5;
+	this.health=1;
+    console.log("Enemy Created");
+}}
+class HealthPickup extends Pickup{
+	impulse(player){
+		player.gotHealthPickup();
+		this.dead = true;
+	}
+}
+class HitShield extends Pickup{
+	impulse(player){
+		player.gotHitShield();
+		this.dead = true;
+	}
+}
+class DoubleFireRate extends Pickup{
+	impulse(player){
+		player.gotDoubleFireRate();
+		this.dead = true;
+	}
+}
+class HealthIncrease extends Pickup{
+	impulse(player){
+		player.gotHealthIncrease();
+		this.dead = true;
+	}
+}
+class EnemySlowdown extends Pickup{
+	impulse(player){
+		player.gotEnemySlowdown();
+		this.dead = true;
+	}
+}
+
 //Enemy Class
 //Extension of Unit
 class Enemy extends Unit{
@@ -124,6 +195,7 @@ class Enemy extends Unit{
     super(x, y, width, height, texture, health);
     this.maxHealth = health;
     this.speed = speed;
+    this.baseSpeed = speed;
     this.xmin = xmin;
     this.xmax = xmax;
     this.ymin = ymin;
@@ -181,13 +253,22 @@ class Enemy extends Unit{
   //To Be Implemented
   }
 
+	slowDown(slowMult){
+    if (slowMult > 9) {
+		    slowMult = 9;
+    }
+    this.speed = (this.baseSpeed*(1 - 0.1*slowMult));
+	}
+
   collision() {
   //To Be Implemented
   }
 
   impulse(entity) {
     if (entity instanceof Player) {
-      entity.health -= this.damage;
+      if (!entity.hasRemainingHitShield() ) {
+        entity.health -= this.damage;
+      }
     }
   }
 }
@@ -198,6 +279,7 @@ class ERG extends Enemy{
   constructor(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax){
     super(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax);
     console.log("ERG Created");
+	//console.log(callback.toString());
   }
 
   //Moves an ERG Unit
@@ -234,8 +316,6 @@ class ERG extends Enemy{
   this.animation.x = this.x;
   this.animation.y = this.y;
   }
-
-
 
   collision() {
   //To Be Implemented
@@ -532,8 +612,8 @@ class Bullets extends Projectile{
   }
   trajectory(){
     // console.log("These Bullets are going places!");
-    this.x = this.x+this.direction.x*3;
-    this.y = this.y-this.direction.y*3;
+    this.x = this.x+this.direction.x*8;
+    this.y = this.y-this.direction.y*8;
 
     this.animation.x = this.x;
     this.animation.y = this.y;
@@ -554,6 +634,8 @@ class Bullets extends Projectile{
   impulse(entity){
     if(entity instanceof Enemy){
       entity.health -= this.damage;
+
+	console.log("got hit by enemy!");
     }
   }
 }

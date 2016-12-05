@@ -52,6 +52,7 @@ loader
   .add('assets/MaxHeapBlunderbuss.png')
   .add('assets/RecursionProjectile.png')
   .add('assets/DualsProjectile.png')
+  .add('assets/pickups.png')
   .add('assets/healthbar.png')
   .load(setup);
 
@@ -88,6 +89,14 @@ weaponTextures = {
 projectileTextures = {
   recursion: [],
   bullet: []
+};
+
+pickupTextures = {
+	hitShieldTexture: [],
+	doubleFireRateTexture: [],
+	healthIncreaseTexture: [],
+	enemySlowdownTexture: [],
+	healthPickupTexture: []
 };
 
 uiTextures = {
@@ -179,6 +188,15 @@ function setup() {
 
   let dualsProjectileTexture = TextureCache['assets/DualsProjectile.png'];
   projectileTextures.bullet.push(extractFrame(0, 0, 9, 9, dualsProjectileTexture));
+
+//pickups
+ let allPickupTextures = TextureCache['assets/pickups.png'];
+
+	pickupTextures.healthPickupTexture.push(extractFrame(0, 1, 40, 40, allPickupTextures));
+	pickupTextures.hitShieldTexture.push(extractFrame(1, 1, 40, 40, allPickupTextures));
+	pickupTextures.doubleFireRateTexture.push(extractFrame(0, 0, 40, 40, allPickupTextures));
+	pickupTextures.healthIncreaseTexture.push(extractFrame(1, 0, 40, 40, allPickupTextures));
+	pickupTextures.enemySlowdownTexture.push(extractFrame(2, 0, 40, 40, allPickupTextures));
 
   let healthbarTexture = TextureCache['assets/healthbar.png'];
   console.log(healthbarTexture);

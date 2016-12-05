@@ -31,7 +31,9 @@ class Weapon {
     this.sprite.x = this.x;
     this.sprite.y = this.y;
     this.sprite.rotation = this.rotation;
-    if(this.cooldown > 0) this.cooldown--;
+    if(this.cooldown > 0) {
+      this.cooldown--;
+    }
   }
 
   /* Updates weapons sprite */
@@ -54,21 +56,24 @@ class Weapon {
   }
 
   canShoot() {
-    return this.cooldown === 0;
+    return this.cooldown <= 0;
   }
 
   init() {
     gameScene.addChild(this.sprite);
   }
+
+  detach() {
+    gameScene.removeChild(this.sprite);
+  }
 }
-
-
 
 //Max Heap Blunderbuss Class
 //Extension of Weapon
 class MaxHeapBlunderbuss extends Weapon {
   constructor(x, y, texture, playerX, playerY) {
     super(x, y, texture, playerX, playerY);
+	this.maxFireRate=30;
     console.log("Max Heap Blunderbuss Created");
   }
 }
@@ -78,7 +83,12 @@ class MaxHeapBlunderbuss extends Weapon {
 class KeyValueDuals extends Weapon {
   constructor(x, y, texture, playerX, playerY) {
     super(x, y, texture, playerX, playerY);
+	this.maxFireRate=30;
     console.log("Key Value Duals Created");
+  }
+
+  doubleFireRate(){
+	 this.maxFireRate = this.maxFireRate*0.75;
   }
 
   rotateLookup(x,y) {
@@ -110,7 +120,7 @@ class KeyValueDuals extends Weapon {
   fire(vector) {
     if(this.canShoot()) {
       let rotatePos = this.rotateLookup(vector.x, vector.y);
-      this.cooldown = 30;
+      this.cooldown = this.maxFireRate;
       return new Bullets(this.playerX+rotatePos.projX, this.playerY+rotatePos.projY, 9, 9, projectileTextures.bullet, 20, vector);
     }
   }
@@ -121,6 +131,7 @@ class KeyValueDuals extends Weapon {
 class RecursionRifle extends Weapon {
   constructor(x, y, texture, playerX, playerY) {
     super(x, y, texture, playerX, playerY);
+	this.maxFireRate=30;
     console.log("Recursion Rifle Created");
   }
 
