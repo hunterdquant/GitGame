@@ -123,7 +123,7 @@ gameStates = {
 
   start: function() {
            if (readyToPlay) {
-             gameWorld.generateWorld(JSON.stringify(data));
+             gameWorld.generateWorld(JSON.stringify(metadata));
              gameState = gameStates.startScreen;
              gameWorld.init();
              gameWorld.stopAnimation();
