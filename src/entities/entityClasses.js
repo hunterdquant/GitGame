@@ -347,7 +347,7 @@ class RAM extends Enemy{
       if(xdiff > ydiff){
         var sign = (ydiff)?(ydiff)<0?-1:1:0;
         if(this.y  + sign*this.speed + this.height > this.ymax){
-          this.y = this.height = this.ymax;
+          this.y = this.ymax - this.height;
         }
         else if(this.y + sign*this.speed < this.ymin){
           this.y = this.ymin
@@ -360,7 +360,7 @@ class RAM extends Enemy{
       else{
         var sign = (xdiff)?(xdiff)<0?-1:1:0;
         if(this.x + sign*this.speed + this.width > this.xmax){
-          this.x = this.width = this.xmax;
+          this.x = this.xmax - this.width;
         }
         else if(this.x + sign*this.speed < this.xmin){
           this.x = this.xmin
