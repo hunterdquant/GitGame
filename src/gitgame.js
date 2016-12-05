@@ -62,6 +62,7 @@ gameStates = {
         },
   win: function() {
         if (maintext === null && subtext === null) {
+          gameWorld.stopAnimation();
           maintext = new PIXI.Text("You Won!!", {fontFamily : "Terminal", fontSize : 50});
           subtext = new PIXI.Text("Press Space to Restart", {fontFamily : "Terminal", fontSize : 30});
         }
