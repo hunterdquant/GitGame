@@ -462,6 +462,7 @@ class EnvNode {
   updateEntities() {
     for (var enemy of this.enemies) {
       enemy.movement(this.player.x, this.player.y);
+      enemy.healthUpdate();
       var collided = getSATCollision(this.player, enemy);
       if (collided && !this.player.invincible) {
         enemy.impulse(this.player);

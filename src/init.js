@@ -52,6 +52,7 @@ loader
   .add('assets/MaxHeapBlunderbuss.png')
   .add('assets/RecursionProjectile.png')
   .add('assets/DualsProjectile.png')
+  .add('assets/healthbar.png')
   .load(setup);
 
 tileFrames = {
@@ -87,6 +88,10 @@ weaponTextures = {
 projectileTextures = {
   recursion: [],
   bullet: []
+};
+
+uiTextures = {
+  healthBar: []
 };
 
 // Manipulates loaded resources
@@ -174,6 +179,13 @@ function setup() {
 
   let dualsProjectileTexture = TextureCache['assets/DualsProjectile.png'];
   projectileTextures.bullet.push(extractFrame(0, 0, 9, 9, dualsProjectileTexture));
+
+  let healthbarTexture = TextureCache['assets/healthbar.png'];
+  console.log(healthbarTexture);
+  for(var idx = 0; idx < 4; idx++) {
+    uiTextures.healthBar.push(extractFrame(0, idx, 100, 10, healthbarTexture));
+  }
+console.log(uiTextures);
 
   // End sprite sheet loading
   stage.addChild(gameScene);
