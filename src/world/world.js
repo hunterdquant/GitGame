@@ -445,6 +445,7 @@ class EnvNode {
       x += this.player.moveStep;
     }
     this.player.movement(x, y);
+    this.player.updateUI();
     this.player.weapon.update(x,y);
 
     var colVec = null;

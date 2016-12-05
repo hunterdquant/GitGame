@@ -134,6 +134,28 @@ class Player extends Unit{
     this.weapon.sendPos(this.x, this.y);
   }
 
+  init() {
+    super.init();
+
+    this.healthUI = new PIXI.Text(`Health: ${this.health}`, {fontFamily: "Arial", fill: "white", fontSize: 24, fontWeight: "bold"});
+    this.healthUI.setTransform(20, 750);
+    gameScene.addChild(this.healthUI);
+
+    this.shieldsUI = new PIXI.Text(`Shields: ${this.remainingHitShield}`, {fontFamily: "Arial", fill: "white", fontSize: 24, fontWeight: "bold"});
+    this.shieldsUI.setTransform(850, 750);
+    gameScene.addChild(this.shieldsUI);
+  }
+
+  updateUI() {
+    this.healthUI.text = `Health: ${this.health}`;
+    gameScene.removeChild(this.healthUI);
+    gameScene.addChild(this.healthUI);
+
+    this.shieldsUI.text = `Shields: ${this.remainingHitShield}`;
+    gameScene.removeChild(this.shieldsUI);
+    gameScene.addChild(this.shieldsUI);
+  }
+
   attack(vector) {
     return this.weapon.fire(vector);
   }
