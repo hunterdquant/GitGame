@@ -53,6 +53,7 @@ loader
   .add('assets/RecursionProjectile.png')
   .add('assets/DualsProjectile.png')
   .add('assets/pickups.png')
+  .add('assets/healthbar.png')
   .load(setup);
 
 tileFrames = {
@@ -96,6 +97,10 @@ pickupTextures = {
 	healthIncreaseTexture: [],
 	enemySlowdownTexture: [],
 	healthPickupTexture: []
+};
+
+uiTextures = {
+  healthBar: []
 };
 
 // Manipulates loaded resources
@@ -192,6 +197,13 @@ function setup() {
 	pickupTextures.doubleFireRateTexture.push(extractFrame(0, 0, 40, 40, allPickupTextures));
 	pickupTextures.healthIncreaseTexture.push(extractFrame(1, 0, 40, 40, allPickupTextures));
 	pickupTextures.enemySlowdownTexture.push(extractFrame(2, 0, 40, 40, allPickupTextures));
+
+  let healthbarTexture = TextureCache['assets/healthbar.png'];
+  console.log(healthbarTexture);
+  for(var idx = 0; idx < 4; idx++) {
+    uiTextures.healthBar.push(extractFrame(0, idx, 100, 10, healthbarTexture));
+  }
+console.log(uiTextures);
 
   // End sprite sheet loading
   stage.addChild(gameScene);

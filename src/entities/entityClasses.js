@@ -134,6 +134,28 @@ class Player extends Unit{
     this.weapon.sendPos(this.x, this.y);
   }
 
+  init() {
+    super.init();
+
+    this.healthUI = new PIXI.Text(`Health: ${this.health}`, {fontFamily: "Arial", fill: "white", fontSize: 24, fontWeight: "bold"});
+    this.healthUI.setTransform(20, 750);
+    gameScene.addChild(this.healthUI);
+
+    this.shieldsUI = new PIXI.Text(`Shields: ${this.remainingHitShield}`, {fontFamily: "Arial", fill: "white", fontSize: 24, fontWeight: "bold"});
+    this.shieldsUI.setTransform(850, 750);
+    gameScene.addChild(this.shieldsUI);
+  }
+
+  updateUI() {
+    this.healthUI.text = `Health: ${this.health}`;
+    gameScene.removeChild(this.healthUI);
+    gameScene.addChild(this.healthUI);
+
+    this.shieldsUI.text = `Shields: ${this.remainingHitShield}`;
+    gameScene.removeChild(this.shieldsUI);
+    gameScene.addChild(this.shieldsUI);
+  }
+
   attack(vector) {
     return this.weapon.fire(vector);
   }
@@ -193,6 +215,7 @@ class EnemySlowdown extends Pickup{
 class Enemy extends Unit{
   constructor(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax){
     super(x, y, width, height, texture, health);
+    this.maxHealth = health;
     this.speed = speed;
     this.baseSpeed = speed;
     this.xmin = xmin;
@@ -201,8 +224,51 @@ class Enemy extends Unit{
     this.ymax = ymax;
     this.dead = false;
     this.damage = 5;
+    this.healthbarIdx = 0;
     this.animation.anchor.x = 0.5;
     console.log("Enemy Created");
+
+    this.healthBarSprites = [
+      new Sprite(uiTextures.healthBar[0]),
+      new Sprite(uiTextures.healthBar[1]),
+      new Sprite(uiTextures.healthBar[2]),
+      new Sprite(uiTextures.healthBar[3])
+    ];
+
+    this.healthBar = this.healthBarSprites[0];
+    this.healthBar.x = this.x;
+    this.healthBar.y = this.y - 20;
+    gameScene.addChild(this.healthBar);
+  }
+
+  healthUpdate() {
+    let changed = false;
+    if(this.health / this.maxHealth <= 0.25) {
+      this.healthbarIdx = 3;
+      changed = true;
+    } else if(this.health / this.maxHealth <= 0.5) {
+      this.healthbarIdx = 2;
+      changed = true;
+    } else if(this.health / this.maxHealth <= 0.75) {
+      this.healthbarIdx = 1;
+      changed = true;
+    }
+
+    if(changed) {
+      gameScene.removeChild(this.healthBar);
+      this.healthBar = this.healthBarSprites[this.healthbarIdx];
+    }
+    this.healthBar.x = this.x - 50;
+    this.healthBar.y = this.y - 20;
+    if(changed){
+      gameScene.addChild(this.healthBar);
+    }
+  }
+
+  detach() {
+    this.animation.stop();
+    gameScene.removeChild(this.animation);
+    gameScene.removeChild(this.healthBar);
   }
 
   movement() {
@@ -290,6 +356,7 @@ class RAM extends Enemy{
     this.chargeDirectionX = 0;
     this.chargeDirectionY = 0;
   }
+
 
   //Moves a RAM Unit
   //Attempts to charge ar a player in only an x or y direction
