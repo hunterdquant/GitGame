@@ -91,11 +91,11 @@ projectileTextures = {
 };
 
 pickupTextures = {
-	hitShieldTexture: null,
-	doubleFireRateTexture: null,
-	healthIncreaseTexture: null,
-	enemySlowdownTexture: null,
-	healthPickupTexture: null
+	hitShieldTexture: [],
+	doubleFireRateTexture: [],
+	healthIncreaseTexture: [],
+	enemySlowdownTexture: [],
+	healthPickupTexture: []
 };
 
 // Manipulates loaded resources
@@ -180,16 +180,19 @@ function setup() {
 
   let recursionProjectileTexture = TextureCache['assets/RecursionProjectile.png'];
   projectileTextures.recursion.push(extractFrame(0, 0, 1000, 48, recursionProjectileTexture));
-  
+
+  let dualsProjectileTexture = TextureCache['assets/DualsProjectile.png'];
+  projectileTextures.bullet.push(extractFrame(0, 0, 9, 9, dualsProjectileTexture));
+
 //pickups
  let allPickupTextures = TextureCache['assets/pickups.png'];
- 
-	pickupTextures.healthPickupTexture = extractFrame(0, 1, 40, 40, allPickupTextures);
-	pickupTextures.hitShieldTexture = extractFrame(1, 1, 40, 40, allPickupTextures);
-	pickupTextures.doubleFireRateTexture = extractFrame(0, 0, 40, 40, allPickupTextures);
-	pickupTextures.healthIncreaseTexture = extractFrame(1, 0, 40, 40, allPickupTextures);
-	pickupTextures.enemySlowdownTexture = extractFrame(2, 0, 40, 40, allPickupTextures);
-  
+
+	pickupTextures.healthPickupTexture.push(extractFrame(0, 1, 40, 40, allPickupTextures));
+	pickupTextures.hitShieldTexture.push(extractFrame(1, 1, 40, 40, allPickupTextures));
+	pickupTextures.doubleFireRateTexture.push(extractFrame(0, 0, 40, 40, allPickupTextures));
+	pickupTextures.healthIncreaseTexture.push(extractFrame(1, 0, 40, 40, allPickupTextures));
+	pickupTextures.enemySlowdownTexture.push(extractFrame(2, 0, 40, 40, allPickupTextures));
+
   // End sprite sheet loading
   stage.addChild(gameScene);
   console.log('Setup complete');

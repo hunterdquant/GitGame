@@ -31,7 +31,9 @@ class Weapon {
     this.sprite.x = this.x;
     this.sprite.y = this.y;
     this.sprite.rotation = this.rotation;
-    if(this.cooldown > 0) this.cooldown--;
+    if(this.cooldown > 0) {
+      this.cooldown--;
+    }
   }
 
   /* Updates weapons sprite */
@@ -54,7 +56,7 @@ class Weapon {
   }
 
   canShoot() {
-    return this.cooldown === 0;
+    return this.cooldown <= 0;
   }
 
   init() {
@@ -82,9 +84,9 @@ class KeyValueDuals extends Weapon {
   }
 
   doubleFireRate(){
-	 maxFireRate -= maxMaxFireRate * .5;
+	 this.maxFireRate = this.maxFireRate*0.75;
   }
-  
+
   rotateLookup(x,y) {
     let rad = function(deg) {
       return deg * Math.PI / 180;

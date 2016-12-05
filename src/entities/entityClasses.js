@@ -81,31 +81,36 @@ class Unit extends Entity{
 
 //Player Class
 //Extension on Unit
-class Player extends Unit{	
+class Player extends Unit{
   constructor(x, y, width, height, frames, health, weapon, subWeapon){
     super(x, y, width, height, frames, health);
     this.weapon = new KeyValueDuals(x, y+25, weaponTextures.recursionRifle, this.x, this.y);
     this.subWeapon = subWeapon;
     this.moveStep = 4;
     this.invincible = false;
+    this.maxhealth = health;
     this.iFrames = 60;
     this.curIFrames = 0;
-	this.remainingHitShield = 0;//for firewall
-	this.countDoubleFireRate=0;//
+    this.remainingHitShield = 0;//for firewall
+    this.countDoubleFireRate=0;//
     console.log("Player Created");
 	}
 	gotHealthPickup(){
-		this.health=this.health + 25;
+    if (this.health >= this.maxhealth - 25) {
+      this.health = this.maxhealth;
+    } else {
+		    this.health=this.health + 25;
+    }
 	}
 	gotHitShield(){
 		this.remainingHitShield = this.remainingHitShield + 3;
 	}
 	hasRemainingHitShield(){
-		if(remainingHitShield == 0){
+		if(this.remainingHitShield == 0){
 			return false;
 		}
 		else{
-			remainingHitShield --;
+			this.remainingHitShield --;
 			return true;
 		}
 	}
@@ -113,11 +118,11 @@ class Player extends Unit{
 		this.weapon.doubleFireRate();
 	}
 	gotHealthIncrease(){
-	 //gloss over
+	   this.maxhealth += 20;
 	}
-	
+
 	gotEnemySlowdown(){
-		world.enemySlowDown();
+		gameWorld.enemySlowDown();
 	}
   //Moves the Player
   //Takes in an x and y which represent change in x and y coordinates
@@ -153,31 +158,31 @@ class Pickup extends Unit{
     console.log("Enemy Created");
 }}
 class HealthPickup extends Pickup{
-	inpulse(player){
+	impulse(player){
 		player.gotHealthPickup();
 		this.dead = true;
 	}
 }
 class HitShield extends Pickup{
-	inpulse(player){
+	impulse(player){
 		player.gotHitShield();
 		this.dead = true;
 	}
 }
 class DoubleFireRate extends Pickup{
-	inpulse(player){
+	impulse(player){
 		player.gotDoubleFireRate();
 		this.dead = true;
 	}
 }
 class HealthIncrease extends Pickup{
-	inpulse(player){
+	impulse(player){
 		player.gotHealthIncrease();
 		this.dead = true;
 	}
 }
 class EnemySlowdown extends Pickup{
-	inpulse(player){
+	impulse(player){
 		player.gotEnemySlowdown();
 		this.dead = true;
 	}
@@ -189,6 +194,7 @@ class Enemy extends Unit{
   constructor(x, y, width, height, texture, health, speed, xmin, xmax, ymin, ymax){
     super(x, y, width, height, texture, health);
     this.speed = speed;
+    this.baseSpeed = speed;
     this.xmin = xmin;
     this.xmax = xmax;
     this.ymin = ymin;
@@ -202,18 +208,23 @@ class Enemy extends Unit{
   movement() {
   //To Be Implemented
   }
-	
-	slowDown(){
-		this.speed-=this.speed * .1;
+
+	slowDown(slowMult){
+    if (slowMult > 9) {
+		    slowMult = 9;
+    }
+    this.speed = (this.baseSpeed*(1 - 0.1*slowMult));
 	}
-  
+
   collision() {
   //To Be Implemented
   }
 
   impulse(entity) {
     if (entity instanceof Player) {
-      entity.health -= this.damage;
+      if (!entity.hasRemainingHitShield() ) {
+        entity.health -= this.damage;
+      }
     }
   }
 }
@@ -578,7 +589,7 @@ class Bullets extends Projectile{
   impulse(entity){
     if(entity instanceof Enemy){
       entity.health -= this.damage;
-	  
+
 	console.log("got hit by enemy!");
     }
   }
