@@ -71,7 +71,6 @@ class World {
     // Create the graph and generate it.
     this.envGraph = new EnvironmentGraph(this.nodes);
     this.envGraph.generateGraph();
-
     // Find the initial node. This should be the one with no parents :(
     let init = null;
     for (var node in this.nodes) {
@@ -188,6 +187,9 @@ class World {
     this.currentNode.enemies[3].init();
     this.currentNode.enemies[4].init();
     this.currentNode.enemies[5].init();
+    if (this.currentNode.head) {
+      this.currentNode.setReward();
+    }
   }
 
   stopAnimation(){
@@ -587,6 +589,28 @@ class EnvNode {
       }
     }
     this.player.detach();
+  }
+
+
+  setReward() {
+    var rand = Math.random();
+    if (rand < 0.25) {
+      var pickup = new HitShield(Math.floor(this.width/2)*100, Math.floor(this.height/2)*100, 40, 40, pickupTextures.hitShieldTexture);
+      this.pickups.push(pickup);
+      pickup.init();
+    } else if (rand < 0.50) {
+      var pickup = new DoubleFireRate(Math.floor(this.width/2)*100, Math.floor(this.height/2)*100, 40, 40, pickupTextures.doubleFireRateTexture);
+      this.pickups.push(pickup);
+      pickup.init();
+    } else if (rand < 0.75) {
+      var pickup = new HealthIncrease(Math.floor(this.width/2)*100, Math.floor(this.height/2)*100, 40, 40, pickupTextures.healthIncreaseTexture);
+      this.pickups.push(pickup);
+      pickup.init();
+    } else {
+      var pickup = new EnemySlowdown(Math.floor(this.width/2)*100, Math.floor(this.height/2)*100, 40, 40, pickupTextures.enemySlowdownTexture);
+      this.pickups.push(pickup);
+      pickup.init();
+    }
   }
 }
 
