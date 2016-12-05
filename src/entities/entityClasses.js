@@ -268,6 +268,7 @@ class Enemy extends Unit{
   detach() {
     this.animation.stop();
     gameScene.removeChild(this.animation);
+    console.log(this.healthBar);
     gameScene.removeChild(this.healthBar);
   }
 
@@ -496,6 +497,7 @@ class RNG extends Enemy{
     }
     this.animation.stop();
     gameScene.removeChild(this.animation);
+    gameScene.removeChild(this.healthBar);
   }
 }
 
