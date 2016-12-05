@@ -22,40 +22,50 @@ class World {
     let parsedMeta = JSON.parse(metadata);
     // Iterate over commit strings to build nodes.
     for (var commit in parsedMeta.commits) {
-      let node = this.nodes[commit];
-
-      // If node wasn't previously defined, by being a parent of a previous node, then create a new one.
-      if (this.nodes[commit] === null || this.nodes[commit] === undefined) {
-        node = new EnvNode();
-        node.hash = commit;
+      let node = null;
+      for (var n in this.nodes) {
+        if (n.hash === parsedMeta.commits[commit].sha) {
+          node = n;
+        }
       }
 
-      // If there is one parent then we want to have the relationship be bidirectional.
-      // This is because of difficulty scaling by graph depth using BFS.
-      if (parsedMeta.commits[commit].parents.length === 1) {
-        let parent = parsedMeta.commits[commit].parents[0];
+      // If node wasn't previously defined, by being a parent of a previous node, then create a new one.
+      if (node === null || node === undefined) {
+        node = new EnvNode();
+        node.hash = parsedMeta.commits[commit].sha;
+      }
+      for (var parentObj in parsedMeta.commits[commit].parents) {
         // If the parent doesn't already exist create it preemptively.
-        if (this.nodes[parent] === null || this.nodes[parent] === undefined) {
-          this.nodes[parent] = new EnvNode();
-          this.nodes[parent].hash = parent;
+        let parent = null;
+        for (var p in this.nodes) {
+          if (this.nodes[p].hash === parsedMeta.commits[commit].parents[parentObj].sha) {
+            parent = this.nodes[p];
+          }
+        }
+        if (parent === null || parent === undefined) {
+          parent = new EnvNode();
+          parent.hash = parsedMeta.commits[commit].parents[parentObj].sha;
         }
 
         // Ensure bidirection and specify parent.
-        node.neighbors.push(parent);
-        node.parents.push(parent);
-        this.nodes[parent].neighbors.push(commit);
-
-      // This is a merge point and we want it to be directional.
-      } else if (parsedMeta.commits[commit].parents.length > 1) {
-        // This has reference to parents but parent doesnt have a reference to this.
-        for (var parent of parsedMeta.commits[commit].parents) {
-          node.neighbors.push(parent);
-          node.parents.push(parent);
+        node.neighbors.push(parent.hash);
+        node.parents.push(parent.hash);
+        parent.neighbors.push(node.hash);
+        this.nodes[parent.hash] = parent;
+      }
+      // Add the new node to nodes.
+      this.nodes[parsedMeta.commits[commit].sha] = node;
+    }
+    for (var branch in parsedMeta.branches) {
+      for (var node in this.nodes) {
+        if (node === parsedMeta.branches[branch].commit.sha) {
+          this.nodes[node].branch = parsedMeta.branches[branch].name;
+          this.nodes[node].endofbranch = true;
+          if (this.nodes[node].branch === "master") {
+            this.nodes[node].head = true;
+          }
         }
       }
-
-      // Add the new node to nodes.
-      this.nodes[commit] = node;
     }
 
     // Create the graph and generate it.
@@ -88,10 +98,9 @@ class World {
 
     // Update the graph.
     this.envGraph.generateGraph();
-
     // After building the data structure generate the node data.
-    for (var commit in parsedMeta.commits) {
-      this.nodes[commit].generateNode(parsedMeta.commits[commit]);
+    for (var node in this.nodes) {
+      this.nodes[node].generateNode();
     }
 
     this.currentNode = init;
@@ -111,7 +120,7 @@ class World {
     if (this.currentNode !== null) {
       this.player = new Player(100, (this.currentNode.height/3)*100, 100, 100, unitFrames.player, 100);
       this.currentNode.player = this.player;
-      this.currentNode.enemies.push(new RAM(900, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
+      this.currentNode.enemies.push(new RAM(800, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
                                             unitFrames.ram, 300, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
       this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
@@ -157,8 +166,28 @@ class World {
     this.currentNode.init();
     this.currentNode.leaving = false;
     this.player.init();
+    this.player.weapon.detach();
+    this.player.weapon = new KeyValueDuals(this.player.x, this.player.y+25, weaponTextures.recursionRifle, this.player.x, this.player.y);
     this.player.weapon.init();
     this.currentNode.player = this.player;
+    for (var i = 0; i < this.currentNode.enemies.length; i++) {
+      this.currentNode.enemies[i].detach();
+    }
+    this.currentNode.enemies = [];
+
+    this.currentNode.enemies.push(new RAM(800, (this.currentNode.height/3)*100, 150, 200, unitFrames.ram,
+                                          unitFrames.ram, 300, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(900, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/3)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new ERG(400, (this.currentNode.height/6)*100, 50, 50, unitFrames.erg, 100, 1, 100, 1000, 100, 700));
+    this.currentNode.enemies.push(new RNG(100, 100, 50, 50, unitFrames.rng, unitFrames.rngMarker, 100, 1, 100, 1000, 100, 700, 60));
+    this.currentNode.enemies[0].init();
+    this.currentNode.enemies[1].init();
+    this.currentNode.enemies[2].init();
+    this.currentNode.enemies[3].init();
+    this.currentNode.enemies[4].init();
+    this.currentNode.enemies[5].init();
   }
 
   stopAnimation(){
@@ -265,6 +294,9 @@ class EnvNode {
 
   constructor(countEnemySlowdowns) {
       this.hash = '';
+      this.branch = '';
+      this.endofbranch = false;
+      this.head = false;
       // Default room dimensions
       this.width = 10;
       this.height = 8;
@@ -288,7 +320,7 @@ class EnvNode {
   /*
     Parses data for a commit into a node.
   */
-  generateNode(commitData) {
+  generateNode() {
     // Resize if needed.
     if (this.parents.length > this.height - 2) {
       // Set height to the number of nodes needed plus the top and bottom walls.
@@ -316,7 +348,11 @@ class EnvNode {
 		//The floor is produced
     for (var i = 1; i < this.width - 1; i++) {
       for (var j = 1; j < this.height - 1; j++) {
-        this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
+      	if(this.head && i == Math.floor(this.width/2) && j == Math.floor(this.height/2)){
+      	    this.tileSet[i][j] = new Warp(100*i, 100*j, 1, 1, 100, 100, tileFrames['warp']);
+      	} else {
+            this.tileSet[i][j] = new Floor(100*i, 100*j, 1, 1, 100, 100, tileFrames['floor' + (Math.floor(Math.random()*6) + 1)]);
+      	}
       }
     }
 
@@ -411,6 +447,7 @@ class EnvNode {
 
     var colVec = null;
     var colFound = false;
+    var win = false;
     for (var tileLine of this.tileSet) {
       for (var tile of tileLine) {
         if (tile instanceof Wall) {
@@ -424,6 +461,12 @@ class EnvNode {
           if (colVec.x != 0 || colVec.y != 0) {
             this.leaving = true;
             this.doorTile = tile;
+            break;
+          }
+        } else if (tile instanceof Warp) {
+          colVec = this.player.collision(tile);
+          if (colVec.x != 0 || colVec.y != 0) {
+            win = true;
             break;
           }
         }
@@ -471,6 +514,9 @@ class EnvNode {
     }
     if (this.player.health <= 0) {
       this.player.die();
+    }
+    if (win) {
+      gameState = gameStates.win;
     }
   }
 

@@ -567,8 +567,8 @@ class Bullets extends Projectile{
   }
   trajectory(){
     // console.log("These Bullets are going places!");
-    this.x = this.x+this.direction.x*3;
-    this.y = this.y-this.direction.y*3;
+    this.x = this.x+this.direction.x*8;
+    this.y = this.y-this.direction.y*8;
 
     this.animation.x = this.x;
     this.animation.y = this.y;

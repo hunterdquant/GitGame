@@ -62,6 +62,10 @@ class Weapon {
   init() {
     gameScene.addChild(this.sprite);
   }
+
+  detach() {
+    gameScene.removeChild(this.sprite);
+  }
 }
 
 //Max Heap Blunderbuss Class
