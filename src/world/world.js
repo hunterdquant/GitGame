@@ -498,6 +498,12 @@ class EnvNode {
           if (enemy.health <= 0) {
             enemy.detach();
             enemy.dead = true;
+            var healthProb = Math.random();
+            if (healthProb < 0.15) {
+              var health = new HealthPickup(enemy.x, enemy.y, 40, 40, pickupTextures.healthPickupTexture);
+              this.pickups.push(health);
+              health.init();
+            }
           }
         }
       }
